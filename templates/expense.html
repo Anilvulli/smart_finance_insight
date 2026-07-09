@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Add Expense</h2>
+
+<form method="POST">
+
+{{ form.hidden_tag() }}
+
+<div class="row">
+
+<div class="col-md-4">
+
+{{ form.category.label }}
+
+{{ form.category(class="form-control") }}
+
+</div>
+
+<div class="col-md-4">
+
+{{ form.amount.label }}
+
+{{ form.amount(class="form-control") }}
+
+</div>
+
+<div class="col-md-4">
+
+{{ form.payment_method.label }}
+
+{{ form.payment_method(class="form-control") }}
+
+</div>
+
+</div>
+
+<br>
+
+<div class="row">
+
+<div class="col-md-6">
+
+{{ form.expense_date.label }}
+
+{{ form.expense_date(class="form-control") }}
+
+</div>
+
+<div class="col-md-6">
+
+{{ form.description.label }}
+
+{{ form.description(class="form-control") }}
+
+</div>
+
+</div>
+
+<br>
+
+{{ form.submit(class="btn btn-danger") }}
+
+</form>
+
+<hr>
+
+<h3>Expense List</h3>
+
+<table class="table table-bordered">
+
+<tr>
+
+<th>ID</th>
+
+<th>Category</th>
+
+<th>Amount</th>
+
+<th>Payment</th>
+
+<th>Date</th>
+
+<th>Description</th>
+
+</tr>
+
+{% for expense in expenses %}
+
+<tr>
+
+<td>{{ expense.expense_id }}</td>
+
+<td>{{ expense.category }}</td>
+
+<td>₹{{ expense.amount }}</td>
+
+<td>{{ expense.payment_method }}</td>
+
+<td>{{ expense.expense_date }}</td>
+
+<td>{{ expense.description }}</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+{% endblock %}

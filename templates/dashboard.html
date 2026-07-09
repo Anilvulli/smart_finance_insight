@@ -1,0 +1,292 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row">
+
+    <div class="col-md-3">
+
+        <div class="card bg-primary text-white shadow">
+
+            <div class="card-body">
+
+                <h5>Total Income</h5>
+
+                <h2>₹{{ "{:,.2f}".format(total_income) }}</h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <div class="card bg-danger text-white shadow">
+
+            <div class="card-body">
+
+                <h5>Total Expense</h5>
+
+                <h2>₹{{ "{:,.2f}".format(total_expense) }}</h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <div class="card bg-success text-white shadow">
+
+            <div class="card-body">
+
+                <h5>Savings</h5>
+
+                <h2>₹{{ "{:,.2f}".format(savings) }}</h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <div class="card bg-warning shadow">
+
+            <div class="card-body">
+
+                <h5>Budget</h5>
+
+                <h2>₹{{ "{:,.2f}".format(total_budget) }}</h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+
+        <div class="card shadow">
+
+            <div class="card-header bg-success text-white">
+                Recent Income
+            </div>
+
+            <div class="card-body">
+
+                <table class="table table-sm">
+
+                    <thead>
+                        <tr>
+                            <th>Source</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                    {% for i in recent_income %}
+
+                        <tr>
+                            <td>{{ i.source }}</td>
+                            <td class="text-success">
+                                ₹{{ i.amount }}
+                            </td>
+                        </tr>
+
+                    {% else %}
+
+                        <tr>
+                            <td colspan="2" class="text-center">
+                                No Income
+                            </td>
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+    <div class="col-md-4">
+
+        <div class="card shadow">
+
+            <div class="card-header bg-danger text-white">
+                Recent Expenses
+            </div>
+
+            <div class="card-body">
+
+                <table class="table table-sm">
+
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                    {% for e in recent_expense %}
+
+                        <tr>
+                            <td>{{ e.category }}</td>
+                            <td class="text-danger">
+                                ₹{{ e.amount }}
+                            </td>
+                        </tr>
+
+                    {% else %}
+
+                        <tr>
+                            <td colspan="2" class="text-center">
+                                No Expenses
+                            </td>
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+    <div class="col-md-4">
+
+        <div class="card shadow">
+
+            <div class="card-header bg-warning">
+                Recent Budgets
+            </div>
+
+            <div class="card-body">
+
+                <table class="table table-sm">
+
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Budget</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                    {% for b in recent_budget %}
+
+                        <tr>
+                            <td>{{ b.category }}</td>
+                            <td>
+                                ₹{{ b.budget_amount }}
+                            </td>
+                        </tr>
+
+                    {% else %}
+
+                        <tr>
+                            <td colspan="2" class="text-center">
+                                No Budget
+                            </td>
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<div class="card shadow mt-4">
+
+    <div class="card-header bg-primary text-white">
+
+        Expense Pie Chart
+
+    </div>
+
+    <div class="card-body">
+
+        <canvas id="expenseChart" class="w-50 mx-auto"></canvas>
+
+    </div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const canvas = document.getElementById("expenseChart");
+
+    if (!canvas) return;
+
+    const labels = JSON.parse('{{ labels|default([])|tojson|safe }}');
+    const values = JSON.parse('{{ values|default([])|tojson|safe }}');
+    Chart.register(ChartDataLabels);
+    new Chart(canvas, {
+        type: "doughnut",
+        data: {
+            labels: labels,
+            datasets: [{
+                data: values,
+                backgroundColor: [
+                    "#0d6efd",
+                    "#dc3545",
+                    "#198754",
+                    "#ffc107",
+                    "#6f42c1",
+                    "#fd7e14",
+                    "#20c997"
+                ]
+            }]
+        },
+       options: {
+    responsive: true,
+    plugins: {
+        legend: {
+            position: "bottom"
+        },
+        datalabels: {
+            color: "#fff",
+            font: {
+                weight: "bold",
+                size: 14
+            },
+            formatter: (value, context) => {
+                const data = context.chart.data.datasets[0].data;
+                const total = data.reduce((sum, val) => sum + val, 0);
+                const percentage = ((value / total) * 100).toFixed(1);
+                return percentage + "%";
+            }
+        }
+    }
+}
+    });
+
+});
+</script>
+{% endblock %}
