@@ -5,7 +5,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from app import app
 from models import Expense, db, User,Income,Budget
 from forms import ExpenseForm, ExpenseForm, RegisterForm, LoginForm, IncomeForm,BudgetForm
-from sqlalchemy import func,desc
+from sqlalchemy import func,desc,extract
 
 @app.route("/")
 def home():
@@ -110,6 +110,29 @@ def dashboard():
 
     labels = [row[0] for row in expense_data]
     values = [float(row[1]) for row in expense_data]
+    # Monthly Income
+    income_result = db.session.query(
+        extract('month', Income.income_date),
+        func.sum(Income.amount)
+        ).filter(
+            Income.user_id == current_user.id
+            ).group_by(
+                extract('month', Income.income_date)
+                ).all()
+    expense_result = db.session.query(
+        extract('month', Expense.expense_date),
+        func.sum(Expense.amount)).filter(
+            Expense.user_id == current_user.id).group_by(
+                extract('month', Expense.expense_date)
+                ).all()
+    months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+
+    income_data = [0]*12
+    expense_data = [0]*12
+    for month, amount in income_result:
+        income_data[int(month)-1] = float(amount)
+        for month, amount in expense_result:
+            expense_data[int(month)-1] = float(amount)
     
 
     return render_template(
@@ -122,9 +145,11 @@ def dashboard():
     recent_expense=recent_expense,
     recent_budget=recent_budget,
     labels=labels,
-    values=values
+    values=values,
+    months=months,
+    income_data=income_data,
+    expense_data=expense_data
 )
-
 @app.route("/logout")
 @login_required
 def logout():
