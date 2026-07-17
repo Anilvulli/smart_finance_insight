@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField,FloatField, DateField, SelectField,DecimalField, TextAreaField
 from wtforms.validators import DataRequired, Email, EqualTo
 
+
 class RegisterForm(FlaskForm):
 
     fullname = StringField("Full Name", validators=[DataRequired()])
@@ -137,3 +138,76 @@ class BudgetForm(FlaskForm):
     )
 
     submit = SubmitField("Save Budget")
+
+
+from wtforms import SelectField
+
+class InvestmentForm(FlaskForm):
+
+    investment_type = SelectField(
+        "Investment Type",
+        choices=[
+            ("Stocks", "Stocks"),
+            ("Mutual Funds", "Mutual Funds"),
+            ("Fixed Deposit", "Fixed Deposit"),
+            ("Gold", "Gold"),
+            ("Silver", "Silver"),
+            ("Real Estate", "Real Estate"),
+            ("Cryptocurrency", "Cryptocurrency"),
+            ("PPF", "PPF"),
+            ("EPF", "EPF"),
+            ("NPS", "NPS"),
+            ("Bonds", "Bonds"),
+            ("Others", "Others")
+        ]
+    )
+
+    investment_name = SelectField(
+    "Investment Name",
+    choices=[
+        ("Reliance Industries", "Reliance Industries"),
+        ("TCS", "TCS"),
+        ("Infosys", "Infosys"),
+        ("HDFC Bank", "HDFC Bank"),
+        ("SBI Bluechip Fund", "SBI Bluechip Fund"),
+        ("Axis Bluechip Fund", "Axis Bluechip Fund"),
+        ("Gold ETF", "Gold ETF"),
+        ("Bitcoin", "Bitcoin"),
+        ("Ethereum", "Ethereum"),
+        ("SBI Fixed Deposit", "SBI Fixed Deposit"),
+        ("HDFC Fixed Deposit", "HDFC Fixed Deposit"),
+        ("Public Provident Fund", "Public Provident Fund"),
+        ("National Pension System", "National Pension System"),
+        ("Others", "Others")
+    ]
+)
+    amount = DecimalField("Investment Amount")
+    current_value = DecimalField("Current Value")
+    investment_date = DateField("Investment Date")
+    submit = SubmitField("Save Investment")
+
+class GoalForm(FlaskForm):
+
+    goal_name = StringField(
+        "Goal Name",
+        validators=[DataRequired()]
+    )
+
+    target_amount = FloatField(
+        "Target Amount",
+        validators=[DataRequired()]
+    )
+
+    saved_amount = FloatField(
+        "Saved Amount",
+        validators=[DataRequired()]
+    )
+
+    target_date = DateField(
+        "Target Date",
+        validators=[DataRequired()]
+    )
+
+    submit = SubmitField("Save Goal")
+
+

@@ -1,0 +1,442 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row mb-4">
+
+    <div class="col-md-3">
+        <div class="card bg-primary text-white shadow">
+            <div class="card-body text-center">
+                <h6>Total Target</h6>
+                <h3>₹{{ "{:,.2f}".format(total_target) }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card bg-success text-white shadow">
+            <div class="card-body text-center">
+                <h6>Total Saved</h6>
+                <h3>₹{{ "{:,.2f}".format(total_saved) }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card bg-danger text-white shadow">
+            <div class="card-body text-center">
+                <h6>Remaining</h6>
+                <h3>₹{{ "{:,.2f}".format(remaining_amount) }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card bg-warning shadow">
+            <div class="card-body text-center">
+                <h6>Overall Progress</h6>
+                <h3>{{ overall_progress }}%</h3>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="row">
+    <div class="col-md-4">
+
+        <div class="card shadow">
+
+            <div class="card-header bg-primary text-white">
+                Add Financial Goal
+            </div>
+
+            <div class="card-body">
+
+                <form method="POST">
+
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.goal_name.label(class="form-label") }}
+                        {{ form.goal_name(class="form-control", placeholder="Goal Name") }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.target_amount.label(class="form-label") }}
+                        {{ form.target_amount(class="form-control", placeholder="Target Amount") }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.saved_amount.label(class="form-label") }}
+                        {{ form.saved_amount(class="form-control", placeholder="Saved Amount") }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.target_date.label(class="form-label") }}
+                        {{ form.target_date(class="form-control") }}
+                    </div>
+
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-8">
+
+        <div class="card shadow">
+
+            <div class="card-header bg-success text-white">
+                My Financial Goals
+            </div>
+
+            <div class="card-body">
+
+                <table class="table table-bordered table-hover">
+
+                    <thead class="table-dark">
+
+                        <tr>
+
+                            <th>Goal</th>
+                            <th>Target</th>
+                            <th>Saved</th>
+                            <th>Status</th>
+                            <th>Progress</th>
+                            <th>Target Date</th>
+                            <th>Remaining</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    {% for g in goals %}
+
+                    {% set progress=((g.saved_amount/g.target_amount)*100)|round(1) %}
+
+                    <tr>
+
+                        <td>{{ g.goal_name }}</td>
+
+                        <td>₹{{ "{:,.2f}".format(g.target_amount) }}</td>
+
+                        <td>₹{{ "{:,.2f}".format(g.saved_amount) }}</td>
+
+                        <td>
+
+                            {% if progress >= 100 %}
+
+                                <span class="badge bg-success">
+                                    Goal Achieved
+                                </span>
+
+                            {% elif progress >=75 %}
+
+                                <span class="badge bg-info">
+                                    Almost There
+                                </span>
+
+                            {% elif progress >=50 %}
+
+                                <span class="badge bg-warning text-dark">
+                                    In Progress
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-danger">
+                                    Just Started
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td width="35%">
+
+                            <div class="progress" style="height:25px;">
+
+                                {% if progress>=100 %}
+
+                                <div class="progress-bar bg-success"
+                                     style="width:100%;">
+
+                                    100%
+
+                                </div>
+
+                                {% else %}
+
+                                <div class="progress-bar bg-primary"
+                                     style="width:{{ progress }}%;">
+
+                                    {{ progress }}%
+
+                                </div>
+
+                                {% endif %}
+
+                            </div>
+
+                        </td>
+                        <td>{{ g.target_date }}</td>
+                        <td>₹{{ "{:,.2f}".format(g.target_amount-g.saved_amount) }}</td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Overview Cards -->
+
+<div class="row mt-4">
+
+    <div class="col-md-8">
+
+        <div class="card shadow">
+
+            <div class="card-header bg-primary text-white">
+
+                📊 Goal Progress Overview
+
+            </div>
+
+            <div class="card-body">
+
+                <canvas id="goalChart"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4">
+
+        <div class="card shadow">
+
+            <div class="card-header bg-warning">
+
+                ⭐ Top Priority Goal
+
+            </div>
+
+            <div class="card-body">
+
+               {% if top_goal %}
+
+<h4>{{ top_goal.goal_name }}</h4>
+
+<p>
+
+<b>Target :</b>
+
+₹{{ "{:,.2f}".format(top_goal.target_amount) }}
+
+</p>
+
+<p>
+
+<b>Saved :</b>
+
+₹{{ "{:,.2f}".format(top_goal.saved_amount) }}
+
+</p>
+
+<p>
+
+<b>Remaining :</b>
+
+₹{{ "{:,.2f}".format(top_goal.target_amount-top_goal.saved_amount) }}
+
+</p>
+
+<div class="progress">
+
+<div class="progress-bar bg-success"
+
+style="width:{{ ((top_goal.saved_amount/top_goal.target_amount)*100)|round(2) }}%;">
+
+{{ ((top_goal.saved_amount/top_goal.target_amount)*100)|round(2) }}%
+
+</div>
+
+</div>
+
+{% else %}
+
+No Goals Available
+
+{% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<div class="card shadow mt-4">
+
+<div class="card-header bg-dark text-white">
+
+Goal Analytics Dashboard
+
+</div>
+
+<div class="card-body">
+
+<table class="table table-bordered">
+
+<thead>
+
+<tr>
+
+<th>Total Goals</th>
+
+<th>Total Target</th>
+
+<th>Total Saved</th>
+
+<th>Remaining</th>
+
+<th>Overall Progress</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td>{{ goals|length }}</td>
+
+<td>₹{{ "{:,.2f}".format(total_target) }}</td>
+
+<td>₹{{ "{:,.2f}".format(total_saved) }}</td>
+
+<td>₹{{ "{:,.2f}".format(remaining_amount) }}</td>
+
+<td>{{ overall_progress }}%</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+const ctx=document.getElementById("goalChart");
+
+new Chart(ctx,{
+
+type:"bar",
+
+data:{
+
+labels:{{ goal_labels|tojson }},
+
+datasets:[{
+
+label:"Completion %",
+
+data:{{ goal_progress|tojson }},
+
+backgroundColor:[
+"#0d6efd",
+"#198754",
+"#ffc107",
+"#dc3545",
+"#6f42c1",
+"#fd7e14",
+"#20c997",
+"#6610f2"
+],
+
+borderRadius:10
+
+}]
+
+},
+
+options:{
+
+responsive:true,
+
+plugins:{
+
+legend:{
+display:false
+},
+
+tooltip:{
+
+callbacks:{
+
+label:function(context){
+
+return context.raw+"% Completed";
+
+}
+
+}
+
+}
+
+},
+
+scales:{
+
+y:{
+
+beginAtZero:true,
+
+max:100,
+
+ticks:{
+
+callback:function(value){
+
+return value+"%";
+
+}
+
+}
+
+}
+
+}
+
+}
+
+});
+
+</script>
+
+{% endblock %}

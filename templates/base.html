@@ -20,7 +20,7 @@
         <div class="p-3 text-center border-bottom">
             <h3>💰 Finance</h3>
         </div>
-
+        {% if current_user.is_authenticated %}
         <ul class="nav flex-column mt-3">
 
             <li class="nav-item">
@@ -53,7 +53,23 @@
                 </a>
             </li>
 
-            {% if current_user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('investment') }}">
+                    📈 Investment
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('portfolio') }}">
+                <i class="fas fa-chart-line"></i>
+                    💼 Portfolio Analytics
+                 </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('goal') }}">
+                    🎯 Financial Goal Planner
+                </a>
+            </li>
+            
             <li class="nav-item">
                 <a class="nav-link text-danger" href="{{ url_for('logout') }}">
                     🚪 Logout

@@ -1,0 +1,456 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+<h2 class="mb-4 text-center">
+    📊 Portfolio Analytics Dashboard
+</h2>
+
+<!-- ================= Summary Cards ================= -->
+
+<div class="row">
+
+<div class="col-md-3 mb-3">
+
+<div class="card bg-primary text-white shadow">
+
+<div class="card-body text-center">
+
+<h5>Total Investment</h5>
+
+<h3>₹{{ "{:,.2f}".format(total_investment) }}</h3>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-3 mb-3">
+
+<div class="card bg-success text-white shadow">
+
+<div class="card-body text-center">
+
+<h5>Current Value</h5>
+
+<h3>₹{{ "{:,.2f}".format(total_current) }}</h3>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-3 mb-3">
+
+<div class="card {% if total_profit>=0 %}bg-info{% else %}bg-danger{% endif %} text-white shadow">
+
+<div class="card-body text-center">
+
+<h5>Profit / Loss</h5>
+
+<h3>₹{{ "{:,.2f}".format(total_profit) }}</h3>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-3 mb-3">
+
+<div class="card bg-warning shadow">
+
+<div class="card-body text-center">
+
+<h5>ROI</h5>
+
+<h3>{{ roi }}%</h3>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ================= Charts ================= -->
+
+<div class="row mt-4">
+
+<div class="col-md-6">
+
+<div class="card shadow">
+
+<div class="card-header bg-primary text-white">
+
+Asset Allocation
+
+</div>
+
+<div class="card-body">
+
+<canvas id="assetChart"></canvas>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-6">
+
+<div class="card shadow">
+
+<div class="card-header bg-success text-white">
+
+Portfolio Growth
+
+</div>
+
+<div class="card-body">
+
+<canvas id="growthChart"></canvas>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ================= Top & Lowest ================= -->
+
+<div class="row mt-4">
+
+<div class="col-md-6">
+
+<div class="card shadow">
+
+<div class="card-header bg-success text-white">
+
+🏆 Top Performing Asset
+
+</div>
+
+<div class="card-body">
+
+{% if top_asset %}
+
+<h4>{{ top_asset.investment_name }}</h4>
+
+<p>Type : {{ top_asset.investment_type }}</p>
+
+<p>Current Value : ₹{{ top_asset.current_value }}</p>
+
+<h5 class="text-success">
+
+₹{{ top_asset.current_value-top_asset.amount }}
+
+</h5>
+
+{% endif %}
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-6">
+
+<div class="card shadow">
+
+<div class="card-header bg-danger text-white">
+
+📉 Lowest Performing Asset
+
+</div>
+
+<div class="card-body">
+
+{% if worst_asset %}
+
+<h4>{{ worst_asset.investment_name }}</h4>
+
+<p>Type : {{ worst_asset.investment_type }}</p>
+
+<p>Current Value : ₹{{ worst_asset.current_value }}</p>
+
+<h5 class="text-danger">
+
+₹{{ worst_asset.current_value-worst_asset.amount }}
+
+</h5>
+
+{% endif %}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ================= Goal & Risk ================= -->
+
+<div class="row mt-4">
+
+<div class="col-md-6">
+
+<div class="card shadow">
+
+<div class="card-header bg-info text-white">
+
+Financial Goal Progress
+
+</div>
+
+<div class="card-body">
+
+<h5>Total Goals : {{ total_goals }}</h5>
+
+<h5>Completed : {{ completed }}</h5>
+
+<h5>Completion : {{ goal_percentage }}%</h5>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-6">
+
+<div class="card shadow">
+
+<div class="card-header bg-dark text-white">
+
+Risk Analysis
+
+</div>
+
+<div class="card-body text-center">
+
+{% if risk=="Low" %}
+
+<span class="badge bg-success fs-5">
+
+Low Risk
+
+</span>
+
+{% elif risk=="Medium" %}
+
+<span class="badge bg-warning fs-5">
+
+Medium Risk
+
+</span>
+
+{% else %}
+
+<span class="badge bg-danger fs-5">
+
+High Risk
+
+</span>
+
+{% endif %}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ================= Diversification ================= -->
+
+<div class="card shadow mt-4">
+
+<div class="card-header bg-secondary text-white">
+
+Portfolio Diversification
+
+</div>
+
+<div class="card-body">
+
+<table class="table table-bordered">
+
+<thead class="table-dark">
+
+<tr>
+
+<th>Investment</th>
+
+<th>Type</th>
+
+<th>Allocation %</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for item in diversification %}
+
+<tr>
+
+<td>{{ item.name }}</td>
+
+<td>{{ item.type }}</td>
+
+<td>{{ item.allocation }}%</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<!-- ================= Monthly Report ================= -->
+
+<div class="card shadow mt-4">
+
+<div class="card-header bg-primary text-white">
+
+Monthly Investment Report
+
+</div>
+
+<div class="card-body">
+
+<table class="table table-striped">
+
+<thead>
+
+<tr>
+
+<th>Month</th>
+
+<th>Portfolio Value</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for i in range(months|length) %}
+
+<tr>
+
+<td>{{ months[i] }}</td>
+
+<td>₹{{ growth[i] }}</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+
+
+<div class="text-center mt-4 mb-4">
+
+<a href="{{ url_for('download_pdf') }}" class="btn btn-danger">
+
+Download PDF
+
+</a>
+
+
+<a href="{{ url_for('download_excel') }}" class="btn btn-success">
+
+Download Excel
+
+</a>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+new Chart(document.getElementById("assetChart"),{
+
+type:"pie",
+
+data:{
+
+labels:{{ asset_labels|tojson }},
+
+datasets:[{
+
+data:{{ asset_values|tojson }},
+
+backgroundColor:[
+"#0d6efd",
+"#198754",
+"#ffc107",
+"#dc3545",
+"#6610f2",
+"#20c997",
+"#fd7e14"
+]
+
+}]
+
+}
+
+});
+
+new Chart(document.getElementById("growthChart"),{
+
+type:"line",
+
+data:{
+
+labels:{{ months|tojson }},
+
+datasets:[{
+
+label:"Portfolio Growth",
+
+data:{{ growth|tojson }},
+
+borderColor:"#0d6efd",
+
+fill:false,
+
+tension:0.4
+
+}]
+
+}
+
+});
+
+</script>
+
+{% endblock %}

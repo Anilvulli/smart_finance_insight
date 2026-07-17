@@ -1,0 +1,596 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row mb-4">
+
+    <div class="col-md-4 mb-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5>Total Investment</h5>
+                <h3>₹{{ "{:,.2f}".format(total_investment) }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5>Current Value</h5>
+                <h3>₹{{ "{:,.2f}".format(total_current) }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card {% if total_profit >= 0 %}bg-info{% else %}bg-danger{% endif %} text-white">
+            <div class="card-body">
+                <h5>Profit / Loss</h5>
+                <h3>₹{{ "{:,.2f}".format(total_profit) }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+    <div class="card bg-warning text-dark">
+        <div class="card-body text-center">
+            <h5>Overall ROI</h5>
+            <h3>{{ "%.2f"|format(roi) }}%</h3>
+        </div>
+    </div>
+</div>
+</div>
+<div class="card shadow mt-4 mb-3">
+
+    <div class="card-header bg-dark text-white">
+
+        ⭐ Top Performing Investment
+
+    </div>
+
+    <div class="card-body">
+
+        {% if top_asset %}
+
+        <h4>{{ top_asset.investment_name }}</h4>
+
+        <p>
+
+            Type :
+            <strong>{{ top_asset.investment_type }}</strong>
+
+        </p>
+
+        <p>
+
+            Invested :
+            ₹{{ "{:,.2f}".format(top_asset.amount) }}
+
+        </p>
+
+        <p>
+
+            Current :
+            ₹{{ "{:,.2f}".format(top_asset.current_value) }}
+
+        </p>
+
+        <h5 class="text-success">
+
+            Profit :
+
+            ₹{{ "{:,.2f}".format(top_asset.current_value-top_asset.amount) }}
+
+        </h5>
+
+        {% else %}
+
+        No Investments
+
+        {% endif %}
+
+    </div>
+
+</div>
+<div class="row">
+
+    <div class="col-md-4">
+
+        <div class="card shadow">
+
+            <div class="card-header bg-primary text-white">
+                Add Investment
+            </div>
+
+            <div class="card-body">
+
+                <form method="POST">
+
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.investment_type.label(class="form-label") }}
+                        {{ form.investment_type(class="form-select") }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.investment_name.label(class="form-label") }}
+                        {{ form.investment_name(class="form-control", placeholder="Investment Name") }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.amount.label(class="form-label") }}
+                        {{ form.amount(class="form-control", placeholder="Investment Amount") }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.current_value.label(class="form-label") }}
+                        {{ form.current_value(class="form-control", placeholder="Current Value") }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.investment_date.label(class="form-label") }}
+                        {{ form.investment_date(class="form-control") }}
+                    </div>
+
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+    <div class="col-md-8">
+
+        <div class="card shadow">
+
+            <div class="card-header bg-success text-white">
+                My Investments
+            </div>
+
+            <div class="card-body">
+
+                <table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Investment Type</th>
+            <th>Investment Name</th>
+            <th>Investment Amount</th>
+            <th>Current Value</th>
+            <th>Status</th>
+            <th>Profit / Loss</th>
+            <th>ROI</th>
+            <th>Allocation</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+    {% for inv in investments %}
+
+    <tr>
+        <td>{{ inv.investment_type }}</td>
+        <td>{{ inv.investment_name }}</td>
+        <td>₹{{ inv.amount }}</td>
+        <td>₹{{ inv.current_value }}</td>
+        
+
+        {% set diff = inv.current_value - inv.amount %}
+
+        {% if diff > 0 %}
+            <td>
+                <span class="badge bg-success">Profit</span>
+            </td>
+            <td class="text-success">
+                +₹{{ "%.2f"|format(diff) }}
+            </td>
+
+        {% elif diff < 0 %}
+            <td>
+                <span class="badge bg-danger">Loss</span>
+            </td>
+            <td class="text-danger">
+                ₹{{ "%.2f"|format(diff) }}
+            </td>
+
+        {% else %}
+            <td>
+                <span class="badge bg-secondary">No Change</span>
+            </td>
+            <td>₹0.00</td>
+        
+        {% endif %}
+        <td>{{ "%.2f"|format(((inv.current_value-inv.amount)/inv.amount)*100) }}%</td>
+        <td>{{ "%.2f"|format((inv.current_value/total_current)*100) }}%</td>
+
+    </tr>
+
+    {% endfor %}
+
+    </tbody>
+</table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<hr>
+<div class="row mt-4">
+
+
+    <div class="col-md-6">
+
+        <div class="card shadow h-100">
+
+            <div class="card-header bg-success text-white">
+                📈 Portfolio Performance
+            </div>
+
+            <div class="card-body">
+                <canvas id="performanceChart" height="250"></canvas>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-6">
+
+        <div class="card shadow h-100">
+
+            <div class="card-header bg-primary text-white">
+                📉 Investment Growth
+            </div>
+
+            <div class="card-body">
+                <canvas id="growthChart"></canvas>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="row mt-4">
+
+<div class="col-md-6">
+
+<div class="card shadow">
+
+<div class="card-header bg-info text-white">
+
+📊 Asset Allocation
+
+</div>
+
+<div class="card-body">
+
+<canvas id="allocationChart"></canvas>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-6">
+
+<div class="card shadow">
+
+<div class="card-header bg-secondary text-white">
+
+Portfolio Diversification
+
+</div>
+
+<div class="card-body">
+
+<table class="table table-bordered">
+
+<thead>
+
+<tr>
+
+<th>Type</th>
+
+<th>Allocation</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for item in diversification %}
+
+<tr>
+
+<td>{{ item.type }}</td>
+
+<td>
+
+{{ item.allocation }} %
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card shadow mt-4">
+
+    <div class="card-header bg-secondary text-white">
+
+        Portfolio Summary
+
+    </div>
+
+    <div class="card-body">
+
+        <table class="table table-bordered">
+
+            <thead class="table-dark">
+
+            <tr>
+
+                <th>Total Investments</th>
+
+                <th>Total Invested</th>
+
+                <th>Current Value</th>
+
+                <th>Net Profit/Loss</th>
+                <th>Overall ROI</th>
+
+            </tr>
+
+            </thead>
+
+            <tbody>
+
+            <tr>
+
+                <td>{{ investments|length }}</td>
+
+                <td>₹{{ "{:,.2f}".format(total_investment) }}</td>
+
+                <td>₹{{ "{:,.2f}".format(total_current) }}</td>
+                
+
+                <td>
+
+                    {% if total_profit>=0 %}
+
+                    <span class="text-success">
+
+                        ₹{{ "{:,.2f}".format(total_profit) }}
+
+                    </span>
+                
+                    {% else %}
+
+                    <span class="text-danger">
+
+                        ₹{{ "{:,.2f}".format(total_profit) }}
+
+                    </span>
+
+                    {% endif %}
+
+                </td>
+                <td>{{ "%.2f"|format(roi) }} %</td>
+            </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const investmentNames = [
+        {% for inv in investments %}
+        "{{ inv.investment_name }}",
+        {% endfor %}
+    ];
+
+    const profits = [
+        {% for inv in investments %}
+        {{ inv.current_value - inv.amount }},
+        {% endfor %}
+    ];
+
+    const invested = [
+        {% for inv in investments %}
+        {{ inv.amount }},
+        {% endfor %}
+    ];
+
+    const current = [
+        {% for inv in investments %}
+        {{ inv.current_value }},
+        {% endfor %}
+    ];
+
+
+    const performanceCanvas = document.getElementById("performanceChart");
+
+    if (performanceCanvas) {
+
+        new Chart(performanceCanvas, {
+
+            type: "bar",
+
+            data: {
+                labels: investmentNames,
+                datasets: [{
+                    label: "Profit / Loss",
+                    data: profits,
+                    backgroundColor: profits.map(x => x >= 0 ? "#198754" : "#dc3545")
+                }]
+            },
+
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+
+        });
+
+    }
+
+    // Growth Chart
+    const growthCanvas = document.getElementById("growthChart");
+
+    if (growthCanvas) {
+
+        new Chart(growthCanvas, {
+
+            type: "line",
+
+            data: {
+                labels: investmentNames,
+                datasets: [
+
+                    {
+                        label: "Investment",
+                        data: invested,
+                        borderColor: "#0d6efd",
+                        fill: false,
+                        tension: 0.4
+                    },
+
+                    {
+                        label: "Current Value",
+                        data: current,
+                        borderColor: "#198754",
+                        fill: false,
+                        tension: 0.4
+                    }
+
+                ]
+            },
+
+            options: {
+                responsive: true
+            }
+
+        });
+
+    }
+
+});
+
+
+new Chart(document.getElementById("allocationChart"),{
+
+type:"pie",
+
+data:{
+
+labels:{{ labels|tojson }},
+
+datasets:[{
+
+data:{{ values|tojson }},
+
+backgroundColor:[
+
+"#0d6efd",
+
+"#198754",
+
+"#ffc107",
+
+"#dc3545",
+
+"#6610f2",
+
+"#20c997",
+
+"#fd7e14"
+
+]
+
+}]
+
+},
+
+options:{
+
+responsive:true,
+
+plugins:{
+
+legend:{
+
+position:"bottom"
+
+}
+
+}
+
+}
+
+});
+
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const ctx = document.getElementById("allocationChart");
+
+    if (!ctx) return;
+
+    new Chart(ctx, {
+        type: "pie",
+        data: {
+            labels: {{ labels|tojson }},
+            datasets: [{
+                data: {{ values|tojson }},
+                backgroundColor: [
+                    "#0d6efd",
+                    "#198754",
+                    "#dc3545",
+                    "#ffc107",
+                    "#6610f2",
+                    "#20c997",
+                    "#fd7e14"
+                ]
+            }]
+        }
+    });
+
+});
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}

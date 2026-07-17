@@ -69,3 +69,27 @@ class Budget(db.Model):
     month = db.Column(db.String(20), nullable=False)
 
     year = db.Column(db.Integer, nullable=False)
+
+
+class Investment(db.Model):
+    __tablename__ = "investment"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+
+    investment_type = db.Column(db.String(100))
+    investment_name = db.Column(db.String(100))
+    amount = db.Column(db.Float)
+    current_value = db.Column(db.Float)
+    investment_date = db.Column(db.Date)
+class Goal(db.Model):
+    __tablename__ = "goal"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+
+    goal_name = db.Column(db.String(100))
+    target_amount = db.Column(db.Float)
+    saved_amount = db.Column(db.Float)
+    target_date = db.Column(db.Date)
+
