@@ -1,121 +1,81 @@
 {% extends "base.html" %}
 
 {% block content %}
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    
 <div class="container mt-4">
-
-<div class="row">
-
-<div class="col-md-4">
-
-<div class="card shadow">
-
-<div class="card-header bg-warning">
-
-<h4>Set Budget</h4>
-
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header bg-warning">
+                    <h4>Set Budget</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        <div class="mb-3">
+                            {{ form.category.label }}
+                            {{ form.category(class="form-control") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form.budget_amount.label }}
+                            {{ form.budget_amount(class="form-control") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form.month.label }}
+                            {{ form.month(class="form-control") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form.year.label }}
+                            {{ form.year(class="form-control") }}
+                        </div>
+                        <div class="d-grid">
+                            {{ form.submit(class="btn btn-warning") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4>Budget List</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Category</th>
+                                <th>Budget</th>
+                                <th>Month</th>
+                                <th>Year</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for b in budgets %}
+                            <tr>
+                                <td>{{ b.id }}</td>
+                                <td>{{ b.category }}</td>
+                                <td>₹{{ b.budget_amount }}</td>
+                                <td>{{ b.month }}</td>
+                                <td>{{ b.year }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-<div class="card-body">
-
-<form method="POST">
-
-{{ form.hidden_tag() }}
-
-<div class="mb-3">
-{{ form.category.label }}
-{{ form.category(class="form-control") }}
-</div>
-
-<div class="mb-3">
-{{ form.budget_amount.label }}
-{{ form.budget_amount(class="form-control") }}
-</div>
-
-<div class="mb-3">
-{{ form.month.label }}
-{{ form.month(class="form-control") }}
-</div>
-
-<div class="mb-3">
-{{ form.year.label }}
-{{ form.year(class="form-control") }}
-</div>
-
-<div class="d-grid">
-
-{{ form.submit(class="btn btn-warning") }}
-
-</div>
-
-</form>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="col-md-8">
-
-<div class="card shadow">
-
-<div class="card-header bg-success text-white">
-
-<h4>Budget List</h4>
-
-</div>
-
-<div class="card-body">
-
-<table class="table table-bordered">
-
-<thead>
-
-<tr>
-
-<th>ID</th>
-<th>Category</th>
-<th>Budget</th>
-<th>Month</th>
-<th>Year</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-{% for b in budgets %}
-
-<tr>
-
-<td>{{ b.id }}</td>
-
-<td>{{ b.category }}</td>
-
-<td>₹{{ b.budget_amount }}</td>
-
-<td>{{ b.month }}</td>
-
-<td>{{ b.year }}</td>
-
-</tr>
-
-{% endfor %}
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
+    
+</body>
+</html>
 {% endblock %}

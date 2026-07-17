@@ -79,16 +79,12 @@ def login():
             flash("Invalid Email or Password", "danger")
 
     return render_template("login.html", form=form)
-from sqlalchemy import func, extract, desc
+
 
 @app.route("/dashboard")
 @login_required
 def dashboard():
 
-    # ======================================================
-    # MODULE 1
-    # Income / Expense / Budget
-    # ======================================================
 
     total_income = db.session.query(
         func.sum(Income.amount)
@@ -128,10 +124,7 @@ def dashboard():
         desc(Budget.id)
     ).limit(5).all()
 
-    # ======================================================
-    # Expense Pie Chart
-    # ======================================================
-
+   
     expense_chart = db.session.query(
         Expense.category,
         func.sum(Expense.amount)
@@ -148,10 +141,7 @@ def dashboard():
         labels.append(row[0])
         values.append(float(row[1]))
 
-    # ======================================================
-    # Monthly Income / Expense
-    # ======================================================
-
+  
     months = [
         "Jan","Feb","Mar","Apr","May","Jun",
         "Jul","Aug","Sep","Oct","Nov","Dec"
@@ -401,7 +391,6 @@ def investment():
         user_id=current_user.id
     ).all()
 
-    # Portfolio Summary
     total_investment = sum(float(i.amount or 0) for i in investments)
 
     total_current = sum(float(i.current_value or 0) for i in investments)
@@ -412,7 +401,6 @@ def investment():
         (total_profit / total_investment) * 100, 2
     ) if total_investment > 0 else 0
 
-    # Asset Allocation
     chart_data = db.session.query(
         Investment.investment_type,
         func.sum(Investment.current_value)
@@ -439,7 +427,6 @@ def investment():
             if total_current > 0 else 0
         )
 
-    # Growth Chart
     investment_names = [
         inv.investment_name for inv in investments
     ]
@@ -457,7 +444,6 @@ def investment():
         for inv in investments
     ]
 
-    # Best Performing Investment
     top_asset = None
 
     if investments:
@@ -466,7 +452,7 @@ def investment():
             key=lambda x: x.current_value - x.amount
         )
 
-    # Diversification Table
+    
     diversification = []
 
     for inv in investments:
@@ -689,10 +675,7 @@ def portfolio():
         2
     ) if total_goals else 0
 
-    # -------------------------
-    # Investment Summary
-    # -------------------------
-
+   
     total_investment = sum(float(i.amount) for i in investments)
 
     total_current = sum(float(i.current_value) for i in investments)
@@ -1034,7 +1017,6 @@ def download_excel():
     ws["A7"] = "Overall ROI (%)"
     ws["B7"] = roi
 
-    # Table Heading
     row = 10
 
     headings = [
@@ -1082,7 +1064,7 @@ def download_excel():
 
         row += 1
 
-    # Auto Width
+    
     for column_cells in ws.columns:
 
         length = max(len(str(cell.value or "")) for cell in column_cells)

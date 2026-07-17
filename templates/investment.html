@@ -1,109 +1,84 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<div class="row mb-4">
-
-    <div class="col-md-4 mb-4">
-        <div class="card bg-primary text-white">
-            <div class="card-body">
-                <h5>Total Investment</h5>
-                <h3>₹{{ "{:,.2f}".format(total_investment) }}</h3>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="row mb-4">
+            <div class="col-md-4 mb-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h5>Total Investment</h5>
+                        <h3>₹{{ "{:,.2f}".format(total_investment) }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h5>Current Value</h5>
+                        <h3>₹{{ "{:,.2f}".format(total_current) }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card {% if total_profit >= 0 %}bg-info{% else %}bg-danger{% endif %} text-white">
+                    <div class="card-body">
+                        <h5>Profit / Loss</h5>
+                        <h3>₹{{ "{:,.2f}".format(total_profit) }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-warning text-dark">
+                    <div class="card-body text-center">
+                        <h5>Overall ROI</h5>
+                        <h3>{{ "%.2f"|format(roi) }}%</h3>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-
-    <div class="col-md-4">
-        <div class="card bg-success text-white">
+        <div class="card shadow mt-4 mb-3">
+            <div class="card-header bg-dark text-white">
+                ⭐ Top Performing Investment
+            </div>
             <div class="card-body">
-                <h5>Current Value</h5>
-                <h3>₹{{ "{:,.2f}".format(total_current) }}</h3>
+                {% if top_asset %}
+                <h4>{{ top_asset.investment_name }}</h4>
+                <p>
+                    Type :
+                    <strong>{{ top_asset.investment_type }}</strong>
+                </p>
+                <p>
+                    Invested :
+                    ₹{{ "{:,.2f}".format(top_asset.amount) }}
+                </p>
+                <p>
+                    Current :
+                    ₹{{ "{:,.2f}".format(top_asset.current_value) }}
+                </p>
+                <h5 class="text-success">
+                    Profit :
+                    ₹{{ "{:,.2f}".format(top_asset.current_value-top_asset.amount) }}
+                </h5>
+                {% else %}
+                No Investments
+                {% endif %}
             </div>
         </div>
-    </div>
-
-    <div class="col-md-4">
-        <div class="card {% if total_profit >= 0 %}bg-info{% else %}bg-danger{% endif %} text-white">
-            <div class="card-body">
-                <h5>Profit / Loss</h5>
-                <h3>₹{{ "{:,.2f}".format(total_profit) }}</h3>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-    <div class="card bg-warning text-dark">
-        <div class="card-body text-center">
-            <h5>Overall ROI</h5>
-            <h3>{{ "%.2f"|format(roi) }}%</h3>
-        </div>
-    </div>
-</div>
-</div>
-<div class="card shadow mt-4 mb-3">
-
-    <div class="card-header bg-dark text-white">
-
-        ⭐ Top Performing Investment
-
-    </div>
-
-    <div class="card-body">
-
-        {% if top_asset %}
-
-        <h4>{{ top_asset.investment_name }}</h4>
-
-        <p>
-
-            Type :
-            <strong>{{ top_asset.investment_type }}</strong>
-
-        </p>
-
-        <p>
-
-            Invested :
-            ₹{{ "{:,.2f}".format(top_asset.amount) }}
-
-        </p>
-
-        <p>
-
-            Current :
-            ₹{{ "{:,.2f}".format(top_asset.current_value) }}
-
-        </p>
-
-        <h5 class="text-success">
-
-            Profit :
-
-            ₹{{ "{:,.2f}".format(top_asset.current_value-top_asset.amount) }}
-
-        </h5>
-
-        {% else %}
-
-        No Investments
-
-        {% endif %}
-
-    </div>
-
-</div>
-<div class="row">
-
-    <div class="col-md-4">
-
-        <div class="card shadow">
-
-            <div class="card-header bg-primary text-white">
-                Add Investment
-            </div>
-
-            <div class="card-body">
-
-                <form method="POST">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        Add Investment
+                    </div>
+                    <div class="card-body">
+                        <form method="POST">
 
                     {{ form.hidden_tag() }}
 
@@ -211,13 +186,12 @@
 
     </tbody>
 </table>
-            </div>
+</div>
 
         </div>
     </div>
 
 </div>
-
 <hr>
 <div class="row mt-4">
 
@@ -255,83 +229,42 @@
     </div>
 
 </div>
-
 <div class="row mt-4">
-
-<div class="col-md-6">
-
-<div class="card shadow">
-
-<div class="card-header bg-info text-white">
-
-📊 Asset Allocation
-
-</div>
-
-<div class="card-body">
-
-<canvas id="allocationChart"></canvas>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="col-md-6">
-
-<div class="card shadow">
-
-<div class="card-header bg-secondary text-white">
-
-Portfolio Diversification
-
-</div>
-
-<div class="card-body">
-
-<table class="table table-bordered">
-
-<thead>
-
-<tr>
-
-<th>Type</th>
-
-<th>Allocation</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-{% for item in diversification %}
-
-<tr>
-
-<td>{{ item.type }}</td>
-
-<td>
-
-{{ item.allocation }} %
-
-</td>
-
-</tr>
-
-{% endfor %}
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-
-</div>
-
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                📊 Asset Allocation
+            </div>
+            <div class="card-body">
+                <canvas id="allocationChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-secondary text-white">
+                Portfolio Diversification
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Allocation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in diversification %}
+                        <tr>
+                            <td>{{ item.type }}</td>
+                            <td>{{ item.allocation }} %</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 
 
@@ -593,4 +526,8 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    
+</body>
+</html>
 {% endblock %}

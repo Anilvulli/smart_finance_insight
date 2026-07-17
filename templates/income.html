@@ -1,133 +1,79 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<div class="container mt-4">
-
-<div class="row">
-
-<div class="col-md-4">
-
-<div class="card shadow">
-
-<div class="card-header bg-primary text-white">
-
-<h4>Add Income</h4>
-
-</div>
-
-<div class="card-body">
-
-<form method="POST">
-
-{{ form.hidden_tag() }}
-
-<div class="mb-3">
-
-{{ form.source.label }}
-
-{{ form.source(class="form-control") }}
-
-</div>
-
-<div class="mb-3">
-
-{{ form.amount.label }}
-
-{{ form.amount(class="form-control") }}
-
-</div>
-
-<div class="mb-3">
-
-{{ form.income_date.label }}
-
-{{ form.income_date(class="form-control") }}
-
-</div>
-
-<div class="mb-3">
-
-{{ form.description.label }}
-
-{{ form.description(class="form-control") }}
-
-</div>
-
-<div class="d-grid">
-
-{{ form.submit(class="btn btn-success") }}
-
-</div>
-
-</form>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="col-md-8">
-
-<div class="card shadow">
-
-<div class="card-header bg-success text-white">
-
-<h4>Income List</h4>
-
-</div>
-
-<div class="card-body">
-
-<table class="table table-bordered">
-
-<thead>
-
-<tr>
-
-<th>ID</th>
-<th>Source</th>
-<th>Amount</th>
-<th>Date</th>
-<th>Description</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-{% for income in incomes %}
-
-<tr>
-
-<td>{{ income.id }}</td>
-
-<td>{{ income.source }}</td>
-
-<td>₹{{ income.amount }}</td>
-
-<td>{{ income.income_date }}</td>
-
-<td>{{ income.description }}</td>
-
-</tr>
-
-{% endfor %}
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body> 
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h4>Add Income</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST">
+                            {{ form.hidden_tag() }}
+                            <div class="mb-3">
+                                {{ form.source.label }}
+                                {{ form.source(class="form-control") }}
+                            </div>
+                            <div class="mb-3">
+                                {{ form.amount.label }}
+                                {{ form.amount(class="form-control") }}
+                            </div>
+                            <div class="mb-3">
+                                {{ form.income_date.label }}
+                                {{ form.income_date(class="form-control") }}
+                            </div>
+                            <div class="mb-3">
+                                {{ form.description.label }}
+                                {{ form.description(class="form-control") }}
+                            </div>
+                            <div class="d-grid">
+                                {{ form.submit(class="btn btn-success") }}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-header bg-success text-white">
+                        <h4>Income List</h4>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Source</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for income in incomes %}
+                                <tr>
+                                    <td>{{ income.id }}</td>
+                                    <td>{{ income.source }}</td>
+                                    <td>₹{{ income.amount }}</td>
+                                    <td>{{ income.income_date }}</td>
+                                    <td>{{ income.description }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
 {% endblock %}

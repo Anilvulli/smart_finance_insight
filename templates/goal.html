@@ -1,9 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<div class="row mb-4">
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+   <div class="row mb-4">
     <div class="col-md-3">
         <div class="card bg-primary text-white shadow">
             <div class="card-body text-center">
@@ -12,7 +17,6 @@
             </div>
         </div>
     </div>
-
     <div class="col-md-3">
         <div class="card bg-success text-white shadow">
             <div class="card-body text-center">
@@ -205,7 +209,6 @@
 
 </div>
 
-<!-- Overview Cards -->
 
 <div class="row mt-4">
 
@@ -295,57 +298,31 @@ No Goals Available
 
 </div>
 <div class="card shadow mt-4">
-
-<div class="card-header bg-dark text-white">
-
-Goal Analytics Dashboard
-
-</div>
-
-<div class="card-body">
-
-<table class="table table-bordered">
-
-<thead>
-
-<tr>
-
-<th>Total Goals</th>
-
-<th>Total Target</th>
-
-<th>Total Saved</th>
-
-<th>Remaining</th>
-
-<th>Overall Progress</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-<tr>
-
-<td>{{ goals|length }}</td>
-
-<td>₹{{ "{:,.2f}".format(total_target) }}</td>
-
-<td>₹{{ "{:,.2f}".format(total_saved) }}</td>
-
-<td>₹{{ "{:,.2f}".format(remaining_amount) }}</td>
-
-<td>{{ overall_progress }}%</td>
-
-</tr>
-
-</tbody>
-
-</table>
-
-</div>
-
+    <div class="card-header bg-dark text-white">
+        Goal Analytics Dashboard
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Total Goals</th>
+                    <th>Total Target</th>
+                    <th>Total Saved</th>
+                    <th>Remaining</th>
+                    <th>Overall Progress</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ goals|length }}</td>
+                    <td>₹{{ "{:,.2f}".format(total_target) }}</td>
+                    <td>₹{{ "{:,.2f}".format(total_saved) }}</td>
+                    <td>₹{{ "{:,.2f}".format(remaining_amount) }}</td>
+                    <td>{{ overall_progress }}%</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -355,7 +332,6 @@ Goal Analytics Dashboard
 const ctx=document.getElementById("goalChart");
 
 new Chart(ctx,{
-
 type:"bar",
 
 data:{
@@ -439,4 +415,7 @@ return value+"%";
 
 </script>
 
-{% endblock %}
+</body>
+</html>
+
+{% endblock %} 

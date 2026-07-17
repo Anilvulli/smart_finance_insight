@@ -1,179 +1,120 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<div class="container-fluid mt-4">
-
-<h2>Financial Report</h2>
-
-<hr>
-
-<div class="row">
-
-<div class="col-md-3">
-<div class="card bg-primary text-white shadow">
-<div class="card-body text-center">
-<h5>Total Income</h5>
-<h2>₹{{ total_income }}</h2>
-</div>
-</div>
-</div>
-
-<div class="col-md-3">
-<div class="card bg-danger text-white shadow">
-<div class="card-body text-center">
-<h5>Total Expense</h5>
-<h2>₹{{ total_expense }}</h2>
-</div>
-</div>
-</div>
-
-<div class="col-md-3">
-<div class="card bg-success text-white shadow">
-<div class="card-body text-center">
-<h5>Savings</h5>
-<h2>₹{{ savings }}</h2>
-</div>
-</div>
-</div>
-
-<div class="col-md-3">
-<div class="card bg-warning shadow">
-<div class="card-body text-center">
-<h5>Budget</h5>
-<h2>₹{{ total_budget }}</h2>
-</div>
-</div>
-</div>
-
-</div>
-
-<br>
-
-<h4>Income Report</h4>
-
-<table class="table table-bordered">
-
-<thead>
-
-<tr>
-
-<th>ID</th>
-<th>Source</th>
-<th>Amount</th>
-<th>Date</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-{% for income in income_list %}
-
-<tr>
-
-<td>{{ income.id }}</td>
-
-<td>{{ income.source }}</td>
-
-<td>₹{{ income.amount }}</td>
-
-<td>{{ income.income_date }}</td>
-
-</tr>
-
-{% endfor %}
-
-</tbody>
-
-</table>
-
-<br>
-
-<h4>Expense Report</h4>
-
-<table class="table table-bordered">
-
-<thead>
-
-<tr>
-
-<th>ID</th>
-<th>Category</th>
-<th>Amount</th>
-<th>Date</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-{% for expense in expense_list %}
-
-<tr>
-
-<td>{{ expense.expenses_id }}</td>
-
-<td>{{ expense.category }}</td>
-
-<td>₹{{ expense.amount }}</td>
-
-<td>{{ expense.expense_date }}</td>
-
-</tr>
-
-{% endfor %}
-
-</tbody>
-
-</table>
-
-<br>
-
-<h4>Budget Report</h4>
-
-<table class="table table-bordered">
-
-<thead>
-
-<tr>
-
-<th>ID</th>
-<th>Category</th>
-<th>Budget</th>
-<th>Month</th>
-<th>Year</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-{% for budget in budget_list %}
-
-<tr>
-
-<td>{{ budget.id }}</td>
-
-<td>{{ budget.category }}</td>
-
-<td>₹{{ budget.budget_amount }}</td>
-
-<td>{{ budget.month }}</td>
-
-<td>{{ budget.year }}</td>
-
-</tr>
-
-{% endfor %}
-
-</tbody>
-
-</table>
-
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div class="container-fluid mt-4">
+        <h2>Financial Report</h2>
+        <hr>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white shadow">
+                    <div class="card-body text-center">
+                        <h5>Total Income</h5>
+                        <h2>₹{{ total_income }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-danger text-white shadow">
+                    <div class="card-body text-center">
+                        <h5>Total Expense</h5>
+                        <h2>₹{{ total_expense }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white shadow">
+                    <div class="card-body text-center">
+                        <h5>Savings</h5>
+                        <h2>₹{{ savings }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning shadow">
+                    <div class="card-body text-center">
+                        <h5>Budget</h5>
+                        <h2>₹{{ total_budget }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <h4>Income Report</h4>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Source</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for income in income_list %}
+                <tr>
+                    <td>{{ income.id }}</td>
+                    <td>{{ income.source }}</td>
+                    <td>₹{{ income.amount }}</td>
+                    <td>{{ income.income_date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br>
+        <h4>Expense Report</h4>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for expense in expense_list %}
+                <tr>
+                    <td>{{ expense.expenses_id }}</td>
+                    <td>{{ expense.category }}</td>
+                    <td>₹{{ expense.amount }}</td>
+                    <td>{{ expense.expense_date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br>
+        <h4>Budget Report</h4>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Category</th>
+                    <th>Budget</th>
+                    <th>Month</th>
+                    <th>Year</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for budget in budget_list %}
+                <tr>
+                    <td>{{ budget.id }}</td>
+                    <td>{{ budget.category }}</td>
+                    <td>₹{{ budget.budget_amount }}</td>
+                    <td>{{ budget.month }}</td>
+                    <td>{{ budget.year }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
 
 {% endblock %}
