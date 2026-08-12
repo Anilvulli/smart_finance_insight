@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="fw-bold">
+                🤖 AI Financial Insights
+            </h2>
+            <p class="text-muted">
+                Personalized recommendations based on your financial behavior
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card shadow border-0 bg-success text-white">
+                <div class="card-body text-center">
+                    <h6>Total Income</h6>
+                    <h3>
+                        ₹{{ "{:,.2f}".format(total_income|default(0)) }}
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow border-0 bg-danger text-white">
+                <div class="card-body text-center">
+                    <h6>Total Expense</h6>
+                    <h3>
+                        ₹{{ "{:,.2f}".format(total_expense|default(0)) }}
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow border-0 bg-primary text-white">
+                <div class="card-body text-center">
+                    <h6>Savings</h6>
+                    <h3>
+                        ₹{{ "{:,.2f}".format(savings|default(0)) }}
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow border-0 bg-warning">
+                <div class="card-body text-center">
+                    <h6>Investment ROI</h6>
+                    <h3>
+                        {{ roi|default(0) }}%
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <h6>Savings Ratio</h6>
+                    <h3 class="text-success">
+                        {{ savings_ratio|default(0) }}%
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <h6>Expense Ratio</h6>
+                    <h3 class="text-danger">
+                        {{ expense_ratio|default(0) }}%
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <h6>Budget Usage</h6>
+                    <h3 class="text-primary">
+                        {{ budget_utilization|default(0) }}%
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <h6>Current ROI</h6>
+                    <h3 class="text-info">
+                        {{ roi|default(0) }}%
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card shadow mt-5">
+        <div class="card-header bg-dark text-white">
+            <h4>
+                🤖 AI Personalized Recommendations
+            </h4>
+        </div>
+        <div class="card-body">
+            {% if recommendations %}
+                {% for rec in recommendations %}
+                    <div class="alert alert-{{ rec.type }}">
+                        <h5>
+                            {{ rec.title }}
+                        </h5>
+                        <p class="mb-0">
+                            {{ rec.message }}
+                        </p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-success">
+                    No recommendations available.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-lg-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                📈 Spending Trend
+            </div>
+            <div class="card-body">
+                <canvas id="spendingTrend"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                📊 Investment Performance
+            </div>
+            <div class="card-body">
+                <canvas id="investmentChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card shadow mt-4">
+    <div class="card-header bg-warning">
+        Budget Utilization
+    </div>
+    <div class="card-body">
+        <h5>{{ budget_utilization }}%</h5>
+        <div class="progress" style="height:25px;">
+            <div class="progress-bar bg-success" role="progressbar" style="width:{{ budget_utilization }}%;">
+                {{ budget_utilization }}%
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card shadow mt-4">
+    <div class="card-header bg-info text-white">
+        💰 Savings Recommendation
+    </div>
+    <div class="card-body">
+        {% if savings_ratio >=30 %}
+            <div class="alert alert-success">
+                Excellent! Continue maintaining your savings.
+            </div>
+        {% elif savings_ratio >=20 %}
+            <div class="alert alert-warning">
+                Increase savings by ₹2,000 monthly.
+            </div>
+        {% else %}
+            <div class="alert alert-danger">
+                Increase savings immediately.
+            </div>
+        {% endif %}
+    </div>
+</div>
+<div class="card shadow mt-4">
+    <div class="card-header bg-success text-white">
+        📈 Investment Suggestions
+    </div>
+    <div class="card-body">
+        <ul>
+            <li>Increase SIP by ₹2,000</li>
+            <li>Invest consistently every month</li>
+            <li>Diversify Mutual Funds</li>
+            <li>Maintain long-term investment strategy</li>
+        </ul>
+    </div>
+</div>
+<div class="card shadow mt-4">
+    <div class="card-header bg-danger text-white">
+        ⚠ Risk Analysis
+    </div>
+    <div class="card-body">
+        <div class="row text-center">
+            <div class="col">
+                <h5 class="text-success">
+                    Low
+                </h5>
+                <h2>72%</h2>
+            </div>
+            <div class="col">
+                <h5 class="text-warning">
+                    Medium
+                </h5>
+                <h2>20%</h2>
+            </div>
+            <div class="col">
+                <h5 class="text-danger">
+                    High
+                </h5>
+                <h2>8%</h2>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card shadow mt-4">
+    <div class="card-header bg-success text-white">
+        ❤️ Financial Health Score
+    </div>
+    <div class="card-body text-center">
+        <h1 class="display-3">
+            {{ health_score }}
+        </h1>
+        <h4>
+            {{ health_status }}
+        </h4>
+        <div class="progress mt-3">
+            <div class="progress-bar bg-success" style="width:{{ health_score }}%;">
+                {{ health_score }}%
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+new Chart(document.getElementById("spendingTrend"),{
+    type:"line",
+    data:{
+        labels:["Jan","Feb","Mar","Apr","May","Jun"],
+        datasets:[{
+            label:"Expenses",
+            data:[18000,22000,24000,26000,28000,25000],
+            borderColor:"#dc3545",
+            backgroundColor:"#dc3545",
+            tension:.3
+        }]
+    }
+});
+
+new Chart(document.getElementById("investmentChart"),{
+    type:"bar",
+    data:{
+        labels:["Stocks","MF","Gold","FD"],
+        datasets:[{
+            label:"Investment",
+            data:[85000,120000,40000,60000],
+            backgroundColor:[
+            "#0d6efd",
+            "#198754",
+            "#ffc107",
+            "#dc3545"
+            ]
+        }]
+    }
+});
+</script>
+{% endblock %}

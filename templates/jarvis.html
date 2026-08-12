@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-primary text-white">
+
+            <h3>🤖 JARVIS AI Financial Assistant</h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <div id="chat-box"
+                 style="height:400px;
+                        overflow-y:auto;
+                        border:1px solid #ddd;
+                        padding:15px;
+                        background:#f8f9fa;">
+
+                <div class="alert alert-info">
+
+                    👋 Hello {{ current_user.fullname }}!
+
+                    <br><br>
+
+                    I am <b>JARVIS</b>.
+
+                    Ask me anything about:
+
+                    <ul>
+                        <li>Expenses</li>
+                        <li>Budget</li>
+                        <li>Investments</li>
+                        <li>Goals</li>
+                        <li>Reports</li>
+                    </ul>
+
+                </div>
+
+            </div>
+
+            <form id="chat-form" class="mt-3">
+
+                <div class="input-group">
+
+                    <input
+                        type="text"
+                        id="message"
+                        class="form-control"
+                        placeholder="Ask JARVIS something..."
+                        autocomplete="off">
+
+                    <button class="btn btn-success">
+
+                        Send
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+document.getElementById("chat-form").onsubmit=function(e){
+
+    e.preventDefault();
+
+    const msg=document.getElementById("message").value;
+
+    if(msg=="") return;
+
+    let chat=document.getElementById("chat-box");
+
+    chat.innerHTML+=`
+
+    <div class="text-end">
+
+        <div class="alert alert-primary d-inline-block">
+
+            ${msg}
+
+        </div>
+
+    </div>
+
+    `;
+
+    fetch("/jarvis/chat",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+            message:msg
+        })
+
+    })
+
+    .then(res=>res.json())
+
+    .then(data=>{
+
+        chat.innerHTML+=`
+
+        <div>
+
+            <div class="alert alert-success d-inline-block">
+
+                🤖 ${data.reply}
+
+            </div>
+
+        </div>
+
+        `;
+
+        chat.scrollTop=chat.scrollHeight;
+
+    });
+
+    document.getElementById("message").value="";
+
+}
+
+</script>
+
+{% endblock %}

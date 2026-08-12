@@ -1,0 +1,15 @@
+psycopg2-binary
+Flask
+Flask-SQLAlchemy
+Flask-Login
+Flask-Mail
+Flask-Migrate
+Flask-WTF
+gunicorn
+psycopg2-binary
+PyMySQL
+python-dotenv
+numpy
+Pillow
+openpyxl
+reportlab

@@ -1,0 +1,132 @@
+body{
+    overflow-x:hidden;
+    transition:.3s;
+}
+.sidebar{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100vh;
+    background: #212529;
+    overflow-y: auto;
+    transition: all .3s ease;
+    z-index: 1050;
+}
+.sidebar-toggle{
+    display: none;
+    border: none;
+    background: transparent;
+    color: #fff;
+    font-size: 1.6rem;
+    line-height: 1;
+    padding: .15rem .5rem;
+    margin-right: .25rem;
+    cursor: pointer;
+    border-radius: .375rem;
+}
+.sidebar-toggle:hover{
+    background: rgba(255,255,255,.15);
+}
+.sidebar-overlay{
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,.55);
+    z-index: 1045;
+}
+.sidebar-overlay.show{
+    display: block;
+}
+.navbar{
+    position: sticky;
+    top: 0;
+    z-index: 1040;
+    box-shadow: 0 2px 8px rgba(0,0,0,.12);
+}
+.content{
+    transition: margin-left .3s ease;
+}
+@media (max-width: 991.98px){
+   .sidebar{
+        transform: translateX(-100%);
+        box-shadow: none;
+    }
+    .sidebar.open{
+        transform: translateX(0);
+        box-shadow: 0 0 30px rgba(0,0,0,.5);
+    }
+    .content{
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+    .sidebar-toggle{
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .table{
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+    }
+
+}
+@media (min-width: 992px){
+
+    .sidebar{
+        transform: translateX(0);
+    }
+
+    .content{
+        margin-left: 250px;
+        width: calc(100% - 250px);
+    }
+    .sidebar-toggle{
+        display: none !important;
+    }
+
+}
+.table-responsive{
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+canvas{
+    max-width: 100%;
+    height: auto !important;
+}
+@media (max-width: 575.98px){
+    .dropdown-menu{
+        width: 92vw !important;
+        max-width: 92vw !important;
+        left: auto !important;
+        right: 0 !important;
+    }
+}
+@media (max-width: 575.98px){
+
+    .navbar .navbar-brand{
+        font-size: 1rem;
+    }
+
+    .navbar .welcome-text{
+        display: none;
+    }
+
+    .display-1{
+        font-size: 3rem;
+    }
+
+    .card h3{
+        font-size: 1.15rem;
+    }
+
+}
+.profile-upload{
+    max-width: 400px;
+}

@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="container-fluid mt-4">
+    <h2 class="fw-bold text-primary">
+        📊 Financial Reports
+    </h2>
+    <hr>
+    <div class="row g-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="card shadow border-0 bg-primary text-white">
+                <div class="card-body text-center">
+                    <h5>Total Income</h5>
+                    <h2>₹{{ total_income }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card shadow border-0 bg-danger text-white">
+                <div class="card-body text-center">
+                    <h5>Total Expense</h5>
+                    <h2>₹{{ total_expense }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card shadow border-0 bg-success text-white">
+                <div class="card-body text-center">
+                    <h5>Savings</h5>
+                    <h2>₹{{ savings }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card shadow border-0 bg-warning">
+                <div class="card-body text-center">
+                    <h5>Total Budget</h5>
+                    <h2>₹{{ total_budget }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+<div class="row mt-4">
+    <div class="col-lg-6">
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white">
+                <h5>📈 Monthly Expense Report</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="expenseChart" height="120"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card shadow h-100">
+            <div class="card-header bg-secondary text-white">
+                <h5>🏆 Financial Goal Progress</h5>
+            </div>
+            <div class="card-body">
+                {% for goal in goal_report %}
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between">
+                        <strong>{{ goal.goal }}</strong>
+                        <strong>{{ goal.progress }}%</strong>
+                    </div>
+                    <div class="progress mt-2" style="height:25px;">
+                        <div class="progress-bar bg-success"
+                             role="progressbar"
+                             style="width: {{ goal.progress }}%;"
+                             aria-valuenow="{{ goal.progress }}"
+                             aria-valuemin="0"
+                             aria-valuemax="100">
+                            {{ goal.progress }}%
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+    <br>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5>💰 Income Report</h5>
+                </div>
+                <div class="card-body table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-success">
+                            <tr>
+                                <th>ID</th>
+                                <th>Source</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for income in income_list %}
+                            <tr>
+                                <td>{{ income.id }}</td>
+                                <td>{{ income.source }}</td>
+                                <td>₹{{ income.amount }}</td>
+                                <td>{{ income.income_date }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h5>💸 Expense Report</h5>
+                </div>
+                <div class="card-body table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-danger">
+                            <tr>
+                                <th>ID</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for expense in expense_list %}
+                            <tr>
+                                <td>{{ expense.expense_id }}</td>
+                                <td>{{ expense.category }}</td>
+                                <td>₹{{ expense.amount }}</td>
+                                <td>{{ expense.expense_date }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-warning">
+                    <h5>🎯 Budget Utilization</h5>
+                </div>
+                <div class="card-body table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-warning">
+                            <tr>
+                                <th>Category</th>
+                                <th>Budget</th>
+                                <th>Spent</th>
+                                <th>Utilization</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in budget_report %}
+                            <tr>
+                                <td>{{ item.category }}</td>
+                                <td>₹{{ item.budget }}</td>
+                                <td>₹{{ item.spent }}</td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-info"
+                                        style="width:{{ item.utilization }}%;">
+                                        {{ item.utilization }}%
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h5>📈 Investment Performance</h5>
+                </div>
+                <div class="card-body table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-info">
+                            <tr>
+                                <th>Investment</th>
+                                <th>Invested</th>
+                                <th>Current</th>
+                                <th>Profit</th>
+                                <th>ROI</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for inv in investment_report %}
+                            <tr>
+                                <td>{{ inv.investment }}</td>
+                                <td>₹{{ inv.invested }}</td>
+                                <td>₹{{ inv.current }}</td>
+                                <td class="text-success">
+                                    ₹{{ inv.profit }}
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">
+                                        {{ inv.roi }}%
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+<div class="d-flex flex-column flex-md-row justify-content-center align-items-center gap-3 my-4">
+    <a href="{{ url_for('export_expense_pdf') }}"
+       class="btn btn-danger">
+        📄 Download Expense PDF
+    </a>
+    <a href="{{ url_for('export_investment_excel') }}"
+       class="btn btn-success">
+        📊 Download Investment Excel
+    </a>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+new Chart(document.getElementById("expenseChart"),{
+    type:"bar",
+    data:{
+        labels:{{ months|tojson }},
+        datasets:[{
+            label:"Monthly Expenses",
+            data:{{ expense_data|tojson }},
+            backgroundColor:"#dc3545"
+        }]
+    },
+    options:{
+        responsive:true,
+        plugins:{
+            legend:{
+                display:true
+            }
+        },
+        scales:{
+            y:{
+                beginAtZero:true
+            }
+        }
+    }
+});
+</script>
+</body>
+</html>
+{% endblock %}

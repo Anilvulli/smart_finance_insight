@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+</head>
+<body>
+<div class="container-fluid mt-3"> 
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">
+                Spending Pattern Analysis
+            </h2>
+            <p class="text-muted">
+                Analyze your spending habits and understand where your money goes.
+            </p>
+        </div>
+        <div>
+            <select class="form-select">
+                <option>This Month</option>
+                <option>Last Month</option>
+                <option>Last 3 Months</option>
+                <option>This Year</option>
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 mb-3">
+            <div class="card shadow border-0 bg-primary text-white">
+                <div class="card-body text-center">
+                    <h6>Total Expenses</h6>
+                    <h3>
+                        ₹{{ "{:,.2f}".format(total_expense) }}
+                    </h3>
+                    <small>This Month</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card shadow border-0 bg-success text-white">
+                <div class="card-body text-center">
+                    <h6>Monthly Budget</h6>
+                    <h3>
+                        ₹{{ "{:,.2f}".format(total_budget) }}
+                    </h3>
+                    <small>This Month</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card shadow border-0 bg-warning">
+                <div class="card-body text-center">
+                    <h6>Remaining Budget</h6>
+                    <h3>
+                        ₹{{ "{:,.2f}".format(remaining_budget) }}
+                    </h3>
+                    <small>This Month</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card shadow border-0 bg-info text-white">
+                <div class="card-body text-center">
+                    <h6>Highest Spending</h6>
+                    <h3>{{ highest_category }}</h3>
+                    <small>{{ highest_percentage }}% of Total</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    Expenses by Category
+                </div>
+                <div class="card-body">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    Monthly Expense Trend
+                </div>
+                <div class="card-body">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-7">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+                    Category Wise Spending
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                        <tr>
+                            <th>id</th>
+                            <th>Category</th>
+                            <th>Amount</th>
+                            <th>Percentage</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in category_summary %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ item.category }}</td>
+                            <td>
+                                ₹{{ "{:,.2f}".format(item.amount) }}
+                            </td>
+                            <td>
+                                {{ "%.2f"|format(item.percentage) }}%
+                            </td>
+                            <td>
+                                {% if item.percentage >=30 %}
+                                <span class="badge bg-danger">
+                                    High
+                                </span>
+                                {% elif item.percentage>=15 %}
+                                <span class="badge bg-warning">
+                                    Medium
+                                </span>
+                                {% else %}
+                                <span class="badge bg-success">
+                                    Low
+                                </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    Insights & Recommendations
+                </div>
+                <div class="card-body">
+                    <h5>
+                        📈 Top Spending Category
+                    </h5>
+                    <p>
+                        You spend the most on
+                        <strong>
+                            {{ highest_category }}
+                        </strong>
+                        ({{ highest_percentage }}%).
+                    </p>
+                    <hr>
+                    <h5>
+                        💰 Budget Utilization
+                    </h5>
+                    <p>
+                        You have utilized
+                        <strong>
+                            {{ budget_utilization }}%
+                        </strong>
+                        of your monthly budget.
+                    </p>
+                    <hr>
+                    <h5>
+                        💡 Recommendation
+                    </h5>
+                    <p>
+                        {{ recommendation }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+new Chart(document.getElementById("categoryChart"),{
+    type:"pie",
+    data:{
+        labels:{{ category_labels|tojson }},
+        datasets:[{
+            data:{{ category_values|tojson }},
+            backgroundColor:[
+            "#0d6efd",
+            "#198754",
+            "#ffc107",
+            "#dc3545",
+            "#6610f2",
+            "#20c997",
+            "#fd7e14",
+            "#6f42c1"
+            ]
+        }]
+    }
+});
+new Chart(document.getElementById("trendChart"),{
+    type:"bar",
+    data:{
+        labels:{{ months|tojson }},
+        datasets:[{
+            label:"Monthly Expenses",
+            data:{{ monthly_expenses|tojson }},
+            backgroundColor:"#0d6efd"
+        }]
+    },
+    options:{
+        responsive:true,
+        plugins:{
+            legend:{
+                display:false
+            }
+        }
+    }
+});
+</script>
+{% endblock %}
+</body>
+</html>

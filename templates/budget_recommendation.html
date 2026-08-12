@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="container-fluid mt-4">
+    <h2 class="mb-4 text-primary">
+        💰 Personalized Budget Recommendation Dashboard
+    </h2>
+    <div class="row">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white shadow">
+                <div class="card-body text-center">
+                    <h6>Total Expenses</h6>
+                    <h3>₹{{ "{:,.2f}".format(total_expense) }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white shadow">
+                <div class="card-body text-center">
+                    <h6>Total Budget</h6>
+                    <h3>₹{{ "{:,.2f}".format(total_budget) }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card {% if savings >= 0 %}bg-info{% else %}bg-danger{% endif %} text-white shadow">
+                <div class="card-body text-center">
+                    <h6>Remaining Budget</h6>
+                    <h3>₹{{ "{:,.2f}".format(savings) }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning shadow">
+                <div class="card-body text-center">
+                    <h6>Overspending Categories</h6>
+                    <h2>{{ overspending_count }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card shadow mt-4">
+        <div class="card-header bg-danger text-white">
+            Personalized Suggestions
+        </div>
+        <div class="card-body">
+            <ul class="list-group">
+                {% for suggestion in suggestions %}
+                <li class="list-group-item">
+                    ✅ {{ suggestion }}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="card shadow mt-4">
+        <div class="card-header bg-dark text-white">
+            Budget Recommendation Analysis
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Category</th>
+                        <th>Expense</th>
+                        <th>Budget</th>
+                        <th>Difference</th>
+                        <th>Recommended Budget</th>
+                        <th>Status</th>
+                        <th>Alert</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for rec in recommendations %}
+                <tr>
+                    <td>{{ rec.category }}</td>
+                    <td>
+                        ₹{{ "{:,.2f}".format(rec.expense) }}
+                    </td>
+                    <td>
+                        ₹{{ "{:,.2f}".format(rec.budget) }}
+                    </td>
+                    <td>
+                        {% if rec.difference > 0 %}
+                        <span class="text-danger">
+                            +₹{{ "{:,.2f}".format(rec.difference) }}
+                        </span>
+                        {% else %}
+                        <span class="text-success">
+                            ₹{{ "{:,.2f}".format(rec.difference) }}
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        ₹{{ "{:,.2f}".format(rec.recommended_budget) }}
+                    </td>
+                    <td>
+                        {% if rec.status == "Overspending" %}
+                        <span class="badge bg-danger">
+                            Overspending
+                        </span>
+                        {% elif rec.status == "No Budget" %}
+                        <span class="badge bg-warning">
+                            No Budget
+                        </span>
+                        {% else %}
+                        <span class="badge bg-success">
+                            Good
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if rec.alert == "High" %}
+                        🔴 High
+                        {% elif rec.alert == "Warning" %}
+                        🟡 Warning
+                        {% else %}
+                        🟢 Normal
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    Expense vs Budget
+                </div>
+                <div class="card-body">
+                    <canvas id="expenseBudgetChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    Budget Distribution
+                </div>
+                <div class="card-body">
+                    <canvas id="budgetPieChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        {% for rec in recommendations %}
+        <div class="col-md-4 mb-3">
+            <div class="card shadow h-100">
+                <div class="card-header {% if rec.status=='Overspending' %} bg-danger {% elif rec.status=='No Budget' %} bg-warning {% else %} bg-success {% endif %} text-white">
+                    {{ rec.category }}
+                </div>
+                <div class="card-body">
+                    <p>
+                        <strong>Expense:</strong>
+                        ₹{{ "{:,.2f}".format(rec.expense) }}
+                    </p>
+                    <p>
+                        <strong>Budget:</strong>
+                        ₹{{ "{:,.2f}".format(rec.budget) }}
+                    </p>
+                    <p>
+                        <strong>Recommended:</strong>
+                        ₹{{ "{:,.2f}".format(rec.recommended_budget) }}
+                    </p>
+                    <hr>
+                    <p>
+                        {{ rec.recommendation }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="card shadow mt-4">
+        <div class="card-header bg-dark text-white">
+            Budget Recommendation Summary
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+            <table class="table table-bordered">
+                <tr>
+                    <th>Total Expense</th>
+                    <td>
+                        ₹{{ "{:,.2f}".format(total_expense) }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Total Budget</th>
+                    <td>
+                        ₹{{ "{:,.2f}".format(total_budget) }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Remaining Budget</th>
+                    <td>
+                        ₹{{ "{:,.2f}".format(savings) }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Overspending Categories</th>
+                    <td>
+                        {{ overspending_count }}
+                    </td>
+                </tr>
+            </table>
+            </div>
+        </div>
+    </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const expenseCtx = document.getElementById("expenseBudgetChart");
+    if (expenseCtx) {
+        new Chart(expenseCtx, {
+            type: "bar",
+            data: {
+                labels: {{ chart_labels|tojson }},
+                datasets: [
+                    {
+                        label: "Expenses",
+                        data: {{ expense_values|tojson }},
+                        backgroundColor: "#dc3545"
+                    },
+                    {
+                        label: "Budget",
+                        data: {{ budget_values|tojson }},
+                        backgroundColor: "#198754"
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: "top"
+                    }
+                }
+            }
+        });
+    }
+    const pieCtx = document.getElementById("budgetPieChart");
+    if (pieCtx) {
+        new Chart(pieCtx, {
+            type: "pie",
+            data: {
+                labels: {{ chart_labels|tojson }},
+                datasets: [{
+                    data: {{ budget_values|tojson }},
+                    backgroundColor: [
+                        "#0d6efd",
+                        "#198754",
+                        "#ffc107",
+                        "#dc3545",
+                        "#6610f2",
+                        "#20c997",
+                        "#fd7e14",
+                        "#6f42c1",
+                        "#198754",
+                        "#0dcaf0"
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: "bottom"
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+</div>
+{% endblock %}
+</body>
+</html>

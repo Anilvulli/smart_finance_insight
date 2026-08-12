@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="card shadow border-0 mb-4">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">
+                👤 My Profile
+            </h3>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('profile') }}" enctype="multipart/form-data">
+                <div class="text-center mb-4">
+                    <img src="{{ url_for('static', filename='images/' + (current_user.profile_image or 'profile.jpg')) }}" alt="Profile" class="rounded-circle shadow" style="width:120px; height:120px; object-fit:cover;">
+                    <div class="mt-3">
+                        <label class="form-label fw-bold">
+                            Profile Photo
+                        </label>
+                        <input type="file" name="profile_image" class="form-control" accept="image/*">
+                    </div>
+                </div>
+                <h5 class="mb-3">
+                    👤 Personal Information
+                </h5>
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">
+                            Full Name
+                        </label>
+                        <input type="text" name="fullname" class="form-control" value="{{ current_user.fullname or '' }}" required>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">
+                            Email
+                        </label>
+                        <input type="email" class="form-control" value="{{ current_user.email }}" readonly>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">
+                            Gender
+                        </label>
+                        <select name="gender" class="form-select">
+                            <option value="">
+                                Select Gender
+                            </option>
+                            <option value="Male" {% if current_user.gender == "Male" %} selected {% endif %}>
+                                Male
+                            </option>
+                            <option value="Female" {% if current_user.gender == "Female" %} selected {% endif %}>
+                                Female
+                            </option>
+                            <option value="Other" {% if current_user.gender == "Other" %} selected {% endif %}>
+                                Other
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">
+                            Occupation
+                        </label>
+                        <input type="text" name="occupation" class="form-control" value="{{ current_user.occupation or '' }}">
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">
+                            Monthly Income
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                ₹
+                            </span>
+                            <input type="number" name="monthly_income" class="form-control" min="0" step="0.01" value="{{ current_user.monthly_income or 0 }}">
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">
+                            City
+                        </label>
+                        <input type="text" name="city" class="form-control" value="{{ current_user.city or '' }}">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">
+                            Address
+                        </label>
+                        <textarea name="address" class="form-control" rows="3">{{ current_user.address or '' }}</textarea>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <button
+                        type="submit"
+                        class="btn btn-success">
+                        💾 Save Profile
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+<div class="card shadow-sm mb-4 text-center">
+
+    <div class="card-header bg-dark text-white">
+        <h4 class="mb-0">
+            💻 Project Information
+        </h4>
+    </div>
+
+    <div class="card-body">
+        <h5 class="text-primary mb-3">
+            Smart Finance Insights – AI Financial Assistant (JARVIS)
+        </h5>
+        <p>
+            <strong>Project Type:</strong>
+            Full Stack Python Web Application
+        </p>
+        <p>
+            <strong>Backend:</strong>
+            Python, Flask
+        </p>
+        <p>
+            <strong>Frontend:</strong>
+            HTML5, CSS3, JavaScript, Bootstrap 5
+        </p>
+        <p>
+            <strong>Database:</strong>
+            MySQL
+        </p>
+        <p class="mb-0">
+            <strong>Version Control:</strong>
+            Git and GitHub
+        </p>
+    </div>
+</div>
+<div class="card shadow-sm mb-4">
+
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">
+            🚀 Project Modules
+        </h5>
+    </div>
+    <div class="card-body">
+
+        <div class="row">
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="border rounded p-3 h-100">
+                    👤 <strong>User Authentication</strong>
+                    <br>
+                    <small class="text-muted">
+                        Registration, Login, Logout and Password Management
+                    </small>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="border rounded p-3 h-100">
+                    💵 <strong>Income Management</strong>
+                    <br>
+                    <small class="text-muted">
+                        Add and analyze income records
+                    </small>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="border rounded p-3 h-100">
+                    💸 <strong>Expense Management</strong>
+                    <br>
+                    <small class="text-muted">
+                        Track and analyze expenses
+                    </small>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="border rounded p-3 h-100">
+                    🎯 <strong>Budget Management</strong>
+                    <br>
+                    <small class="text-muted">
+                        Budget tracking and recommendations
+                    </small>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="border rounded p-3 h-100">
+                    📈 <strong>Investment Management</strong>
+                    <br>
+                    <small class="text-muted">
+                        Investment and portfolio tracking
+                    </small>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="border rounded p-3 h-100">
+                    🎯 <strong>Financial Goals</strong>
+                  <br>
+                    <small class="text-muted">
+                        Goal tracking and progress analysis
+                    </small>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="border rounded p-3 h-100">
+                    📊 <strong>Financial Reports</strong>
+                    <br>
+                    <small class="text-muted">
+                        Income, Expense, Budget, Investment and Goal Reports
+                    </small>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="border rounded p-3 h-100">
+                    🤖 <strong>JARVIS AI Assistant</strong>
+                    <br>
+                    <small class="text-muted">
+                        AI-powered financial summaries and recommendations
+                    </small>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="border rounded p-3 h-100">
+                    🔔 <strong>Notifications</strong>
+                    <br>
+                    <small class="text-muted">
+                        Read, delete and manage financial notifications
+                    </small>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+    <div class="card shadow border-0 mb-4">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">
+                🔐 Account Security
+            </h5>
+        </div>
+        <div class="card-body">
+            <p class="text-muted">
+                Keep your account secure by regularly updating
+                your password.
+            </p>
+            <a href="{{ url_for('change_password') }}" class="btn btn-warning">
+                🔑 Change Password
+            </a>
+        </div>
+    </div>
+    <div class="card shadow border-0">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">
+                ℹ️ Account Information
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-12 col-md-6">
+                    <strong>Account Email:</strong>
+                    <p class="text-muted mb-0">
+                        {{ current_user.email }}
+                    </p>
+                </div>
+                <div class="col-12 col-md-6">
+                    <strong>User ID:</strong>
+                    <p class="text-muted mb-0">
+                        {{ current_user.id }}
+                    </p>
+                </div>
+                {% if current_user.created_at %}
+                <div class="col-12 col-md-6">
+                    <strong>Account Created:</strong>
+                    <p class="text-muted mb-0">
+                        {{ current_user.created_at.strftime("%d-%b-%Y") }}
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
