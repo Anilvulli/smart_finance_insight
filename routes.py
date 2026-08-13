@@ -2218,8 +2218,8 @@ def feedback():
         flash("Feedback sent successfully!", "success")
         return redirect(url_for("dashboard"))
     return render_template("feedback.html")
-UPLOAD_FOLDER = "static/images"
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+#UPLOAD_FOLDER = "static/images"
+#app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
