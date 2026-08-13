@@ -890,25 +890,14 @@ def goal():
 @login_required
 def portfolio():
 
-    # --------------------------------------------------
-    # 1. Get current user's investments
-    # --------------------------------------------------
-
     investments = Investment.query.filter_by(
         user_id=current_user.id
     ).all()
-
-    # --------------------------------------------------
-    # 2. Get current user's financial goals
-    # --------------------------------------------------
 
     goals = Goal.query.filter_by(
         user_id=current_user.id
     ).all()
 
-    # --------------------------------------------------
-    # 3. Goal calculations
-    # --------------------------------------------------
 
     total_goals = len(goals)
 
@@ -924,10 +913,6 @@ def portfolio():
         )
     else:
         goal_percentage = 0
-
-    # --------------------------------------------------
-    # 4. Investment calculations
-    # --------------------------------------------------
 
     total_investment = sum(
         float(i.amount or 0)
@@ -949,9 +934,6 @@ def portfolio():
     else:
         roi = 0
 
-    # --------------------------------------------------
-    # 5. Asset allocation
-    # --------------------------------------------------
 
     asset_data = db.session.query(
         Investment.investment_type,
@@ -973,13 +955,6 @@ def portfolio():
             float(value or 0)
         )
 
-    # --------------------------------------------------
-    # 6. Monthly portfolio growth
-    #
-    # IMPORTANT:
-    # PostgreSQL does NOT use MySQL DATE_FORMAT().
-    # Use to_char() instead.
-    # --------------------------------------------------
 
     monthly = db.session.query(
         func.to_char(
@@ -1014,10 +989,6 @@ def portfolio():
             float(value or 0)
         )
 
-    # --------------------------------------------------
-    # 7. Top and worst performing investments
-    # --------------------------------------------------
-
     top_asset = None
     worst_asset = None
 
@@ -1036,10 +1007,6 @@ def portfolio():
             float(x.current_value or 0)
             - float(x.amount or 0)
         )
-
-    # --------------------------------------------------
-    # 8. Risk analysis
-    # --------------------------------------------------
 
     risk = "Low"
 
@@ -1062,9 +1029,6 @@ def portfolio():
 
         risk = "Medium"
 
-    # --------------------------------------------------
-    # 9. Portfolio diversification
-    # --------------------------------------------------
 
     diversification = []
 
@@ -1092,11 +1056,6 @@ def portfolio():
 
             "allocation": allocation
         })
-
-    # --------------------------------------------------
-    # 10. Render portfolio page
-    # --------------------------------------------------
-
     return render_template(
         "portfolio.html",
 
