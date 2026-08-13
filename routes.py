@@ -2203,53 +2203,55 @@ def feedback():
         if not subject or not message or not rating:
             flash("Please fill all feedback fields.", "danger")
             return redirect(url_for("feedback"))
+
         try:
-            rating = int(rating)
-            if rating < 1 or rating > 5:
-                flash("Rating must be between 1 and 5.", "danger")
-                return redirect(url_for("feedback"))
-        except ValueError:
-            flash("Invalid rating.", "danger")
-            return redirect(url_for("feedback"))
-        fb = Feedback(
-            user_id=current_user.id,
-            subject=subject,
-            message=message,
-            rating=rating
-        )
-        db.session.add(fb)
-        db.session.commit()
-        try:
+            fb = Feedback(
+                user_id=current_user.id,
+                subject=subject,
+                message=message,
+                rating=int(rating)
+            )
+            db.session.add(fb)
+            db.session.commit()
             msg = Message(
                 subject=f"Feedback from {current_user.fullname}",
                 sender=app.config["MAIL_USERNAME"],
-                recipients=["anilvulli45@gmail.com"]
+                recipients=["anilvulli45@gmail.com"],
+                reply_to=current_user.email
             )
+
             msg.body = f"""
 New Feedback Received
-Name : {current_user.fullname}
-Email : {current_user.email}
-Rating : {rating}/5
+=====================
+
+Name    : {current_user.fullname}
+Email   : {current_user.email}
+Rating  : {rating}/5
+
 Subject :
 {subject}
+
 Message :
 {message}
+
+=====================
+Smart Finance Insights
 """
             mail.send(msg)
-
             flash(
-                "Feedback submitted successfully and email sent!",
+                "Feedback submitted and email sent successfully!",
                 "success"
             )
+            return redirect(url_for("dashboard"))
         except Exception as e:
-            app.logger.exception("Feedback email failed")
+            db.session.rollback()
+            app.logger.exception("Feedback submission failed")
             flash(
-                "Feedback submitted successfully, but email could not be sent.",
-                "warning"
+                "Feedback could not be submitted. Please try again.",
+                "danger"
             )
-        return redirect(url_for("dashboard"))
+            return redirect(url_for("feedback"))
     return render_template("feedback.html")
-
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
