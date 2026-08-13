@@ -2193,14 +2193,24 @@ def jarvis_chat():
     return jsonify({
         "reply": reply
     })
-
 @app.route("/feedback", methods=["GET", "POST"])
 @login_required
 def feedback():
     if request.method == "POST":
-        subject = request.form["subject"]
-        message = request.form["message"]
-        rating = request.form["rating"]
+        subject = request.form.get("subject", "").strip()
+        message = request.form.get("message", "").strip()
+        rating = request.form.get("rating", "").strip()
+        if not subject or not message or not rating:
+            flash("Please fill all feedback fields.", "danger")
+            return redirect(url_for("feedback"))
+        try:
+            rating = int(rating)
+            if rating < 1 or rating > 5:
+                flash("Rating must be between 1 and 5.", "danger")
+                return redirect(url_for("feedback"))
+        except ValueError:
+            flash("Invalid rating.", "danger")
+            return redirect(url_for("feedback"))
         fb = Feedback(
             user_id=current_user.id,
             subject=subject,
@@ -2209,18 +2219,36 @@ def feedback():
         )
         db.session.add(fb)
         db.session.commit()
-        msg = Message(
-            subject=f"Feedback from {current_user.fullname}",
-            sender=app.config["MAIL_USERNAME"],
-            recipients=["anilvulli45@gmail.com"]
-        )
-        msg.body = f""" New Feedback Received Name : {current_user.fullname} Email : {current_user.email} Rating : {rating}/5 Subject : {subject} Message : {message} """
-        app.extensions["mail"].send(msg)
-        flash("Feedback sent successfully!", "success")
+        try:
+            msg = Message(
+                subject=f"Feedback from {current_user.fullname}",
+                sender=app.config["MAIL_USERNAME"],
+                recipients=["anilvulli45@gmail.com"]
+            )
+            msg.body = f"""
+New Feedback Received
+Name : {current_user.fullname}
+Email : {current_user.email}
+Rating : {rating}/5
+Subject :
+{subject}
+Message :
+{message}
+"""
+            mail.send(msg)
+
+            flash(
+                "Feedback submitted successfully and email sent!",
+                "success"
+            )
+        except Exception as e:
+            app.logger.exception("Feedback email failed")
+            flash(
+                "Feedback submitted successfully, but email could not be sent.",
+                "warning"
+            )
         return redirect(url_for("dashboard"))
     return render_template("feedback.html")
-UPLOAD_FOLDER = "static/images"
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
