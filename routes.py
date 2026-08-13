@@ -2197,61 +2197,30 @@ def jarvis_chat():
 @login_required
 def feedback():
     if request.method == "POST":
-        subject = request.form.get("subject", "").strip()
-        message = request.form.get("message", "").strip()
-        rating = request.form.get("rating", "").strip()
-        if not subject or not message or not rating:
-            flash("Please fill all feedback fields.", "danger")
-            return redirect(url_for("feedback"))
-
-        try:
-            fb = Feedback(
-                user_id=current_user.id,
-                subject=subject,
-                message=message,
-                rating=int(rating)
-            )
-            db.session.add(fb)
-            db.session.commit()
-            msg = Message(
-                subject=f"Feedback from {current_user.fullname}",
-                sender=app.config["MAIL_USERNAME"],
-                recipients=["anilvulli45@gmail.com"],
-                reply_to=current_user.email
-            )
-
-            msg.body = f"""
-New Feedback Received
-=====================
-
-Name    : {current_user.fullname}
-Email   : {current_user.email}
-Rating  : {rating}/5
-
-Subject :
-{subject}
-
-Message :
-{message}
-
-=====================
-Smart Finance Insights
-"""
-            mail.send(msg)
-            flash(
-                "Feedback submitted and email sent successfully!",
-                "success"
-            )
-            return redirect(url_for("dashboard"))
-        except Exception as e:
-            db.session.rollback()
-            app.logger.exception("Feedback submission failed")
-            flash(
-                "Feedback could not be submitted. Please try again.",
-                "danger"
-            )
-            return redirect(url_for("feedback"))
+        subject = request.form["subject"]
+        message = request.form["message"]
+        rating = request.form["rating"]
+        fb = Feedback(
+            user_id=current_user.id,
+            subject=subject,
+            message=message,
+            rating=rating
+        )
+        db.session.add(fb)
+        db.session.commit()
+        msg = Message(
+            subject=f"Feedback from {current_user.fullname}",
+            sender=app.config["MAIL_USERNAME"],
+            recipients=["anilvulli45@gmail.com"]
+        )
+        msg.body = f""" New Feedback Received Name : {current_user.fullname} Email : {current_user.email} Rating : {rating}/5 Subject : {subject} Message : {message} """
+        app.extensions["mail"].send(msg)
+        flash("Feedback sent successfully!", "success")
+        return redirect(url_for("dashboard"))
     return render_template("feedback.html")
+UPLOAD_FOLDER = "static/images"
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
