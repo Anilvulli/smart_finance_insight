@@ -2233,7 +2233,7 @@ def feedback():
         message = request.form.get("message", "").strip()
         rating = request.form.get("rating", "").strip()
 
-        # Validate form
+       
         if not subject:
             flash("Please enter a subject.", "warning")
             return redirect(url_for("feedback"))
@@ -2248,9 +2248,7 @@ def feedback():
 
         try:
 
-            # -----------------------------
-            # Save feedback to database
-            # -----------------------------
+            
             feedback_data = Feedback(
                 user_id=current_user.id,
                 subject=subject,
@@ -2261,9 +2259,6 @@ def feedback():
             db.session.add(feedback_data)
             db.session.commit()
 
-            # -----------------------------
-            # Send email
-            # -----------------------------
             try:
 
                 msg = Message(
