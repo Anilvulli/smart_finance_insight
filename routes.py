@@ -5,7 +5,6 @@ from flask import render_template, redirect, url_for, flash,make_response,send_f
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app
-from flask import current_app
 from flask_mail import Message
 from models import Expense, create_notification, db, User,Income,Budget,Investment, Goal,Notification,Feedback
 from forms import ExpenseForm, ExpenseForm, RegisterForm, LoginForm, IncomeForm,BudgetForm,InvestmentForm,GoalForm
@@ -2127,11 +2126,11 @@ def feedback():
         db.session.commit()
         msg = Message(
             subject=f"Feedback from {current_user.fullname}",
-            sender=current_app.config["MAIL_USERNAME"],
+            sender=app.config["MAIL_USERNAME"],
             recipients=["anilvulli45@gmail.com"]
         )
         msg.body = f""" New Feedback Received Name : {current_user.fullname} Email : {current_user.email} Rating : {rating}/5 Subject : {subject} Message : {message} """
-        current_app.extensions["mail"].send(msg)
+        app.extensions["mail"].send(msg)
         flash("Feedback sent successfully!", "success")
         return redirect(url_for("dashboard"))
     return render_template("feedback.html")
