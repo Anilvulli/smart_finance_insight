@@ -15,3 +15,4 @@ openpyxl
 reportlab
 greenlet
 openpyxl
+email-validator
