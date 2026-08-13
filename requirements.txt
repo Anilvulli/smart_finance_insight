@@ -13,3 +13,5 @@ numpy
 Pillow
 openpyxl
 reportlab
+greenlet
+openpyxl
