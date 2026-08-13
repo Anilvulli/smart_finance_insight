@@ -2193,6 +2193,8 @@ def jarvis_chat():
     return jsonify({
         "reply": reply
     })
+
+"""
 @app.route("/feedback", methods=["GET", "POST"])
 @login_required
 def feedback():
@@ -2220,7 +2222,112 @@ def feedback():
     return render_template("feedback.html")
 #UPLOAD_FOLDER = "static/images"
 #app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+"""
+@app.route("/feedback", methods=["GET", "POST"])
+@login_required
+def feedback():
 
+    if request.method == "POST":
+
+        subject = request.form.get("subject", "").strip()
+        message = request.form.get("message", "").strip()
+        rating = request.form.get("rating", "").strip()
+
+        # Validate form
+        if not subject:
+            flash("Please enter a subject.", "warning")
+            return redirect(url_for("feedback"))
+
+        if not message:
+            flash("Please enter your feedback.", "warning")
+            return redirect(url_for("feedback"))
+
+        if not rating:
+            flash("Please select a rating.", "warning")
+            return redirect(url_for("feedback"))
+
+        try:
+
+            # -----------------------------
+            # Save feedback to database
+            # -----------------------------
+            feedback_data = Feedback(
+                user_id=current_user.id,
+                subject=subject,
+                message=message,
+                rating=int(rating)
+            )
+
+            db.session.add(feedback_data)
+            db.session.commit()
+
+            # -----------------------------
+            # Send email
+            # -----------------------------
+            try:
+
+                msg = Message(
+                    subject=f"Feedback from {current_user.fullname}",
+                    sender=app.config["MAIL_USERNAME"],
+                    recipients=["anilvulli45@gmail.com"]
+                )
+
+                msg.body = f"""
+New Feedback Received
+=====================
+
+Name:
+{current_user.fullname}
+
+Email:
+{current_user.email}
+
+Rating:
+{rating}/5
+
+Subject:
+{subject}
+
+Message:
+{message}
+
+=====================
+Smart Finance Insights
+"""
+
+                mail.send(msg)
+
+                flash(
+                    "Feedback submitted and email sent successfully!",
+                    "success"
+                )
+
+            except Exception as email_error:
+
+                print("EMAIL ERROR:", email_error)
+
+                # Feedback is already saved
+                flash(
+                    "Feedback saved successfully, but email could not be sent.",
+                    "warning"
+                )
+
+            return redirect(url_for("dashboard"))
+
+        except Exception as error:
+
+            db.session.rollback()
+
+            print("FEEDBACK DATABASE ERROR:", error)
+
+            flash(
+                "Unable to save feedback. Please try again.",
+                "danger"
+            )
+
+            return redirect(url_for("feedback"))
+
+    return render_template("feedback.html")
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
