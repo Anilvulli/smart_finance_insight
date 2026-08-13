@@ -889,28 +889,70 @@ def goal():
 @app.route("/portfolio")
 @login_required
 def portfolio():
+
+    # --------------------------------------------------
+    # 1. Get current user's investments
+    # --------------------------------------------------
+
     investments = Investment.query.filter_by(
         user_id=current_user.id
     ).all()
+
+    # --------------------------------------------------
+    # 2. Get current user's financial goals
+    # --------------------------------------------------
+
     goals = Goal.query.filter_by(
         user_id=current_user.id
     ).all()
+
+    # --------------------------------------------------
+    # 3. Goal calculations
+    # --------------------------------------------------
+
     total_goals = len(goals)
+
     completed = len([
         g for g in goals
-        if g.saved_amount >= g.target_amount
+        if float(g.saved_amount or 0) >= float(g.target_amount or 0)
     ])
-    goal_percentage = round(
-        (completed / total_goals) * 100,
-        2
-    ) if total_goals else 0
-    total_investment = sum(float(i.amount) for i in investments)
-    total_current = sum(float(i.current_value) for i in investments)
+
+    if total_goals:
+        goal_percentage = round(
+            (completed / total_goals) * 100,
+            2
+        )
+    else:
+        goal_percentage = 0
+
+    # --------------------------------------------------
+    # 4. Investment calculations
+    # --------------------------------------------------
+
+    total_investment = sum(
+        float(i.amount or 0)
+        for i in investments
+    )
+
+    total_current = sum(
+        float(i.current_value or 0)
+        for i in investments
+    )
+
     total_profit = total_current - total_investment
-    roi = round(
-        (total_profit / total_investment) * 100,
-        2
-    ) if total_investment else 0
+
+    if total_investment:
+        roi = round(
+            (total_profit / total_investment) * 100,
+            2
+        )
+    else:
+        roi = 0
+
+    # --------------------------------------------------
+    # 5. Asset allocation
+    # --------------------------------------------------
+
     asset_data = db.session.query(
         Investment.investment_type,
         func.sum(Investment.current_value)
@@ -919,89 +961,173 @@ def portfolio():
     ).group_by(
         Investment.investment_type
     ).all()
+
     asset_labels = []
     asset_values = []
+
     for name, value in asset_data:
+
         asset_labels.append(name)
-        asset_values.append(float(value))
-        monthly = db.session.query(
-        func.date_format(
-            Investment.investment_date,
-            "%Y-%m"
-            ),
-        func.sum(Investment.current_value)
-        ).filter(
-        Investment.user_id == current_user.id
-        ).group_by(
-        func.date_format(
-            Investment.investment_date,
-            "%Y-%m"
+
+        asset_values.append(
+            float(value or 0)
         )
-        ).all()
+
+    # --------------------------------------------------
+    # 6. Monthly portfolio growth
+    #
+    # IMPORTANT:
+    # PostgreSQL does NOT use MySQL DATE_FORMAT().
+    # Use to_char() instead.
+    # --------------------------------------------------
+
+    monthly = db.session.query(
+        func.to_char(
+            Investment.investment_date,
+            "YYYY-MM"
+        ).label("month"),
+        func.sum(
+            Investment.current_value
+        ).label("value")
+    ).filter(
+        Investment.user_id == current_user.id
+    ).group_by(
+        func.to_char(
+            Investment.investment_date,
+            "YYYY-MM"
+        )
+    ).order_by(
+        func.to_char(
+            Investment.investment_date,
+            "YYYY-MM"
+        )
+    ).all()
+
     months = []
     growth = []
+
     for month, value in monthly:
+
         months.append(month)
-        growth.append(float(value))
-        top_asset = None
-        worst_asset = None
+
+        growth.append(
+            float(value or 0)
+        )
+
+    # --------------------------------------------------
+    # 7. Top and worst performing investments
+    # --------------------------------------------------
+
+    top_asset = None
+    worst_asset = None
+
     if investments:
+
         top_asset = max(
             investments,
-            key=lambda x: x.current_value - x.amount
+            key=lambda x:
+            float(x.current_value or 0)
+            - float(x.amount or 0)
         )
+
         worst_asset = min(
             investments,
-            key=lambda x: x.current_value - x.amount
+            key=lambda x:
+            float(x.current_value or 0)
+            - float(x.amount or 0)
         )
-        total_goals = len(goals)
-    completed = len([
-        g for g in goals
-        if g.saved_amount >= g.target_amount
-    ])
-    goal_percentage = round(
-        (completed / total_goals) * 100,
-        2
-    ) if total_goals else 0
+
+    # --------------------------------------------------
+    # 8. Risk analysis
+    # --------------------------------------------------
+
     risk = "Low"
+
     crypto = 0
     stocks = 0
-    for i in investments:
-        if i.investment_type == "Cryptocurrency":
+
+    for investment in investments:
+
+        if investment.investment_type == "Cryptocurrency":
             crypto += 1
-        if i.investment_type == "Stocks":
+
+        elif investment.investment_type == "Stocks":
             stocks += 1
+
     if crypto >= 2:
+
         risk = "High"
+
     elif stocks >= 2:
+
         risk = "Medium"
+
+    # --------------------------------------------------
+    # 9. Portfolio diversification
+    # --------------------------------------------------
+
     diversification = []
+
     for inv in investments:
-        allocation = round(
-            (float(inv.current_value) / total_current) * 100,
-            2
-        ) if total_current else 0
+
+        if total_current:
+
+            allocation = round(
+                (
+                    float(inv.current_value or 0)
+                    / total_current
+                ) * 100,
+                2
+            )
+
+        else:
+
+            allocation = 0
+
         diversification.append({
+
             "name": inv.investment_name,
+
             "type": inv.investment_type,
+
             "allocation": allocation
         })
-        return render_template(
+
+    # --------------------------------------------------
+    # 10. Render portfolio page
+    # --------------------------------------------------
+
+    return render_template(
         "portfolio.html",
+
         total_investment=total_investment,
+
         total_current=total_current,
+
         total_profit=total_profit,
+
         roi=roi,
+
         asset_labels=asset_labels,
+
         asset_values=asset_values,
+
         months=months,
+
         growth=growth,
+
         diversification=diversification,
+
         top_asset=top_asset,
+
         worst_asset=worst_asset,
+
         total_goals=total_goals,
+
         completed=completed,
+
         goal_percentage=goal_percentage,
+
         risk=risk
     )
 
