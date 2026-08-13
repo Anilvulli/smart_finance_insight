@@ -19,3 +19,4 @@ class Config:
     #SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:ROOT@localhost/smart_finance"
     SQLALCHEMY_DATABASE_URI = _database_url()
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    UPLOAD_FOLDER = os.path.join("static", "images")
