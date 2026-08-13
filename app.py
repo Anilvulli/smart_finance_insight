@@ -7,6 +7,7 @@ import os
 
 app = Flask(__name__)
 app.config.from_object(Config)
+app.config["UPLOAD_FOLDER"] = "static/images"
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
 db.init_app(app)
