@@ -174,30 +174,30 @@ def create_notification(user_id, title, message,
     db.session.add(notification)
 
 
-class Feedback(db.Model):
+# class Feedback(db.Model):
 
-    __tablename__ = "feedback"
+#     __tablename__ = "feedback"
 
-    id = db.Column(db.Integer, primary_key=True)
+#     id = db.Column(db.Integer, primary_key=True)
 
-    user_id = db.Column(
-        db.Integer,
-        db.ForeignKey("users.id"),   
-        nullable=False
-    )
+#     user_id = db.Column(
+#         db.Integer,
+#         db.ForeignKey("users.id"),   
+#         nullable=False
+#     )
 
-    rating = db.Column(db.Integer)
+#     rating = db.Column(db.Integer)
 
-    subject = db.Column(db.String(100))
+#     subject = db.Column(db.String(100))
 
-    message = db.Column(db.Text)
+#     message = db.Column(db.Text)
 
-    created_at = db.Column(
-        db.DateTime,
-        default=datetime.utcnow
-    )
+#     created_at = db.Column(
+#         db.DateTime,
+#         default=datetime.utcnow
+#     )
 
-    user = db.relationship(
-        "User",
-        backref="feedbacks"
-    )
+#     user = db.relationship(
+#         "User",
+#         backref="feedbacks"
+#     )
